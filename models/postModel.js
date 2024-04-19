@@ -23,6 +23,10 @@ const postSchema = new mongoose.Schema({
         type: Date,
         required: [true, '`lastReplyTimestamp` is a required field!']
     },
+    isAnonymous: {
+        type: Boolean,
+        required: [true, '`isAnonymous` is a required field!'],
+    },
     replies: [mongoose.Schema({
         content: {
             type: String,
@@ -33,6 +37,15 @@ const postSchema = new mongoose.Schema({
             type: String,
             required: [true, '`postedBy` is a required field!'],
             trim: true
+        },
+        postedBy: {
+            type: String,
+            required: [true, '`postedBy` is a required field!'],
+            trim: true
+        },
+        isAnonymous: {
+            type: Boolean,
+            required: [true, '`isAnonymous` is a required field!'],
         },
         timestamp: {
             type: Date,

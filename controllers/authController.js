@@ -1,15 +1,22 @@
 const user = require('../models/userModel')
 const jwt = require('jsonwebtoken')
-// const util = require('util')
 
 exports.verifySignin = async (req, res, next) => {
 
     const user_ = await user.findOne({username: req.body.username})
-    console.log(req.body)
-    if(!user_) return res.json('no user')
-    if(user_.pass != req.body.pass) return res.json('wrong pass')
+
+    if(!user_) return res.render('signin.hbs', {errmsg: "There's no account associated with this username"})
+    if(user_.pass != req.body.pass) return res.render('signin.hbs', {errmsg: "Incorrect password"})
+
     const token = jwt.sign({id: user_._id}, process.env.SECRET_STR, { expiresIn: process.env.LOGIN_EXPIRES })
-    res.json(token)
+
+    res.cookie('unilinkJWT', token, { 
+        expires: new Date(Date.now() + parseInt(process.env.LOGIN_EXPIRES)), 
+        secure: false,
+        httpOnly: true
+    })
+
+    res.redirect('/posts')
 }
 
 exports.verifySignup = async (req, res, next) => {
@@ -21,33 +28,25 @@ exports.verifySignup = async (req, res, next) => {
     }
 }
 
-exports.getSigninPage = async (req, res, next) => {
-    try {
-        res.render('signin.hbs')
-    } catch (error) {
-        res.status(500).json(error.message)
-    }
+exports.getSigninPage = (req, res, next) => {
+    res.render('signin.hbs')
 }
 
-exports.protect= async(req, res, next) => {
+exports.protectRoute= async(req, res, next) => {
     try {
-        const testToken = req.headers.authorization
-        let token;
-        if(testToken && testToken.startsWith('bearer')) {
-            token = testToken.split(' ')[1]
-        }
-
-        if(!token) { return res.json('Unauthorized') }
-
-        console.log(token)
+        let token = req.cookies.unilinkJWT
+        
+        if(!token) { return res.redirect('/signin') }
+        
         const decodedToken = jwt.verify(token, process.env.SECRET_STR)
-        console.log(decodedToken)
+
         const user_ = await user.findById(decodedToken.id)
-        console.log(user_)
-        if(!user_) { return res.json('Unauthorized') }
+
+        if(!user_) { return res.redirect('/signin') }
+      
+        req.user = user_
         next()
     } catch (error) {
         console.log(error.message)
-        dwasdw
     }
 }

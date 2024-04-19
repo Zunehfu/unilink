@@ -1,5 +1,6 @@
 const post = require('../models/postModel')
 const stat = require('../models/statModel')
+const user = require('../models/userModel')
 
 function modifyPostObj(post_) {
     return post_.map((item) => {
@@ -21,22 +22,16 @@ function modifyPostObj(post_) {
 exports.addPost = async (req, res, next) => {
     try {
 
-        console.log(req.body)
-        if(req.body.hideme) {
-            await post.create({
-                content: req.body.inputData,
-                postedBy: 'Anonymous',
-                timestamp: Date.now(),
-                lastReplyTimestamp: Date.now()
-            })
-        } else {
-            await post.create({
-                content: req.body.inputData,
-                postedBy: 'username',
-                timestamp: Date.now(),
-                lastReplyTimestamp: Date.now()
-            })
-        }
+        let is_anon = false
+        if(req.body.hideme) is_anon = true
+        
+        await post.create({
+            content: req.body.inputData,
+            postedBy: req.user._id,
+            timestamp: Date.now(),
+            lastReplyTimestamp: Date.now(),
+            isAnonymous: is_anon
+        })
 
         console.log(Date.now())
 
@@ -77,13 +72,14 @@ exports.addPostErrorHandler = async (err, req, res, next) => {
     }
 }
 
-exports.getAllPosts = async (req, res) => {
+exports.getAllPosts = async (req, res, next) => {
     try {
         const stat_ = await stat.findOneAndUpdate(
             {}, 
             { $inc: { postsPageHits: 1 } }, 
             { new: true, upsert: true } 
           )
+
 
         let post_ = await post.find().sort({ lastReplyTimestamp: -1 })
         
@@ -102,15 +98,17 @@ exports.getAllPosts = async (req, res) => {
     }
 }
 
-exports.getPostPage = async (req, res) => {
+exports.getPostPage = async (req, res, next) => {
     try {
         const id = req.params.id
         const post_ = await post.findByIdAndUpdate(id, { $inc: { views: 1 } }, { new: true })
+        
         res.render('singlePost.hbs', {
             data: post_.replies,
             con: post_.content,
             by: post_.postedBy,
-            _id: post_._id
+            _id: post_._id,
+            is_anon: post_.isAnonymous
         })
 
     } catch (err) {
@@ -122,11 +120,15 @@ exports.addToPostPage = async (req, res, next) => {
     try {
         const id = req.params.id
 
+        let is_anon = false
+        if(req.body.hideme) is_anon = true
+        
         const post_ = await post.findByIdAndUpdate(id, {
                 $push: {
                     replies: {
                         content: req.body.inputData,
-                        postedBy: 'Anonymous',
+                        postedBy: req.user._id,
+                        isAnonymous: is_anon,
                         timestamp: Date.now()
                     }
                 },
