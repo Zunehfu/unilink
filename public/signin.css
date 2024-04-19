@@ -145,3 +145,18 @@ body {
     text-align: center;
 }
 
+.error-msg {
+    font-family: Roboto Mono;
+    font-size: 10px;
+    color: red;
+    background-color: rgb(255, 188, 188);
+    display: inline-flex; /* Use flexbox for centering */
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+    border: solid 1.3px;
+    border-color: red;
+    border-radius: 10px;
+    height: 40px;
+    margin-top: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

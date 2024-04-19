@@ -39,7 +39,7 @@
     <div class="container">
         <form action="/posts" method="POST">
             <textarea class="input" id="large-input" placeholder="Say something nice..." name="inputData" rows="10" cols="50" maxlength="500"></textarea><br>
-            <spand style="font-family: Roboto Mono;">Hide Me</span><input type="checkbox" name="hideme"><br>
+            <span style="font-family: Roboto Mono;">Hide Me</span><input type="checkbox" name="hideme"><br>
             <button class="btn" type="submit">Let it out!</button>
         </form>
         <br>
@@ -50,24 +50,28 @@
         {{/if}}
         <hr>
         {{#each data}}
-        <a href="/posts/{{_id}}">
-            <div class="post-card">
-                <div class="content">
-                    <div class="title">
-                        {{title}}
-                    </div>
-                    <div class="author">
-                        {{postedBy}}
-                    </div>
+        <div class="post-card">
+            <div class="content">
+                <a href="/posts/{{_id}}">
+                <div class="title">
+                    {{title}}
                 </div>
-                <div class="stats">
-                    views: {{views}}<br>
-                    replies: {{reps}}<br>
-                    date: {{date}}<br>
-                    time: {{time}}
+                </a>
+                <div class="author">
+                    {{#if isAnonymous}}
+                        Anonymous
+                    {{else}}
+                        <a href="/users/{{postedBy}}" class="author-a">{{postedBy}}</a>
+                    {{/if}}
                 </div>
             </div>
-        </a>
+            <div class="stats">
+                views: {{views}}<br>
+                replies: {{reps}}<br>
+                date: {{date}}<br>
+                time: {{time}}
+            </div>
+        </div>
         {{/each}}
     </div>
 </body>

@@ -77,6 +77,7 @@ a:focus {
 .title {
     overflow: hidden; 
     word-wrap: break-word;
+    cursor: pointer;
 }
 
 .stats {
@@ -93,7 +94,6 @@ a:focus {
 .post-card:hover {
     /* box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0); */
     box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
 }
 
 .footer{
@@ -121,6 +121,10 @@ a:focus {
 .author {
     font-size: 12px;
     color: blue;
+}
+
+.author-a:hover {
+    color: orange;
 }
 
 .btn {

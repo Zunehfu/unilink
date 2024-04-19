@@ -37,6 +37,7 @@
 
     <form action="/posts/{{_id}}" method="POST">
         <textarea class="input" id="large-input" placeholder="Reply with something nice..." name="inputData" rows="10" cols="50" maxlength="500"></textarea><br>
+        <span style="font-family: Roboto Mono;">Hide Me</span><input type="checkbox" name="hideme"><br>
         <button class="btn" type="submit">Let it out!</button>
     </form>
 
@@ -47,7 +48,13 @@
     {{/if}}
 
     <div class="parent-post-card">
-        <span class="author">{{by}}</span><br>{{con}}
+        <span class="author">
+            {{#if is_anon}}
+                Anonymous
+            {{else}}
+                <a href="/users/{{by}}" class="replier-a">{{by}}</a>
+            {{/if}}
+        </span><br>{{con}}
     </div>
 
     <hr>
@@ -57,7 +64,12 @@
             {{content}}
         </div>
         <div class="stats">
-            {{postedBy}}<br>
+            {{#if isAnonymous}}
+            Anonymous
+            {{else}}
+            <a href="/users/{{postedBy}}" class="replier-a">{{postedBy}}</a>
+            {{/if}}
+            <br>
             {{timestamp}}
         </div>
     </div>
