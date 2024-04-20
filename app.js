@@ -15,6 +15,10 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
+app.use((req, res, next) => {
+    console.log('Request Method:', req.method);
+    next()
+})
 app.use('/', require('./routes/router'))
 
 mongoose.connect(process.env.CONN_STRL, {
@@ -25,7 +29,5 @@ mongoose.connect(process.env.CONN_STRL, {
     console.log(err)
     console.log('Some error has occured!')
 })
-
-app.get('/login', (req, res) => res.send('Hello World!'))
 
 app.listen(port, () => console.log(`Listening on port ${port}!`))

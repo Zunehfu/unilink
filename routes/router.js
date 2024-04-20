@@ -24,10 +24,11 @@ router.route('/signup')
     .get((req, res) => {res.send('signup page')})
     .post(authController.verifySignup)
 
-router.route('/users/')
+router.route('/users')
     .get(authController.protectRoute, userController.getAllUsers)
 
 router.route('/users/:id')
+    .post(authController.protectRoute, userController.updateUserWithId)
     .get(authController.protectRoute, userController.getUserWithId)
 
 module.exports = router

@@ -22,7 +22,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10+Charted&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Manrope:wght@200..800&family=Martel+Sans:wght@200;300;400;600;700;800;900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Sedan:ital@0;1&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="../public/myprofile.css">
+    <link rel="stylesheet" href="/myprofile.css">
 </head>
 <body>
     <div class="wrapper">
@@ -37,7 +37,7 @@
             <div class="profile-grid-row_2-grid">
                 <div class="profile-grid-row_2-grid-col_1-grid">
                     <div class="profile-grid-row_2-grid-col_1-grid-row_1">
-                        <img src="../public/profile.png" class="profile-image">
+                        <img src="/profilePictures/default.png" class="profile-image">
                     </div>
                     <div class="profile-grid-row_2-grid-col_1-grid-row_2">
                         <!-- <button class="btn-friends">Be Friends! &#x1F44D;</button> -->
@@ -49,73 +49,47 @@
                         <!-- <textarea class="input-anon"  placeholder="Type something to send anonymously...(Don't forget to be nice :D)" maxlength="500"></textarea> -->
                     </div>
                     <div class="profile-grid-row_2-grid-col_1-grid-row_5">
-                        <button class="btn-sendanon">Edit profile</button>
+                        <a href="/users/{{_id}}?edit=true"><button class="btn-sendanon" type="submit">Edit profile</button></a>
                     </div>
                 </div>
                 <div class="profile-grid-row_2-grid-col_2-grid">
-                    <!-- <div>Username: deneth.official</div>
-                    <div>Name: Deneth Priyadarshana</div>
-                    <div>University: University of Moratuwa</div>
-                    <div>Majors: BSc Engineering Hons</div>
-                    <div>Batch: 23rd</div>
-                    <div>Last updated: date</div>
-                    <div>Username: deneth.official</div>
-                    <div>Name: Deneth Priyadarshana</div>
-                    <div>University: University of Moratuwa</div>
-                    <div>Majors: BSc Engineering Hons</div>
-                    <div>Batch: 23rd</div>
-                    <div>Last updated: date</div>
-                    <div>Username: deneth.official</div>
-                    <div>Name: Deneth Priyadarshana</div>
-                    <div>University: University of Moratuwa</div>
-                    <div>Majors: BSc Engineering Hons</div>
-                    <div>Batch: 23rd</div>
-                    <div>Last updated: date</div>
-                    <div>Username: deneth.official</div>
-                    <div>Name: Deneth Priyadarshana</div>
-                    <div>University: University of Moratuwa</div>
-                    <div>Majors: BSc Engineering Hons</div>
-                    <div>Batch: 23rd</div>
-                    <div>Last updated: date</div> -->
-
                     <div class="profile-grid-row_2-grid-col_2-grid-row1-grid">
                         <div class="profile-grid-row_2-grid-col_2-grid-row1-grid-col1">
-                            <b>Your connection with random_user:</b>
-                            <br>
-                            You are friends with random_user!
-                            <br>
-                            [additional details about connection]
                         </div>
                         <div class="profile-grid-row_2-grid-col_2-grid-row1-grid-col2">
-                            <b>Basic Info:</b><br>
                             <table>
-                                <tr><td>Name:</td><td>data</td></tr>
-                                <tr><td>Age:</td><td>data</td></tr>
-                                <tr><td>University:</td><td>data</td></tr>
-                                <tr><td>major/majors:</td><td>data</td></tr>
-                                <tr><td>intake:</td><td>data</td></tr>
-                                <tr><td>relationship status:</td><td>data</td></tr>
-                                <tr><td>Sex:</td><td>data</td></tr>
+                                <tr><td><b>Basic Info:</b></td><td> </td></tr>
+                                <tr><td> </td><td> </td></tr>
+                                <tr><td>Name:</td><td>{{name}}</td></tr>
+                                <tr><td>Age:</td><td>{{age}}</td></tr>
+                                <tr><td>University:</td><td>{{university}}</td></tr>
+                                <tr><td>Major:</td><td>{{major}}</td></tr>
+                                <tr><td>Batch:</td><td>{{batch}}</td></tr>
+                                <tr><td>Relationship status:</td><td>{{relationship}}</td></tr>
+                                <tr><td>Gender:</td><td>{{gender}}</td></tr>
                             </table>
                         </div>
                     </div>
                     <div class="profile-grid-row_2-grid-col_2-grid-row2-grid">
                         <div class="profile-grid-row_2-grid-col_2-grid-row2-grid-col1">
-                            <b>Account Info:</b><br>
                             <table>
-                                <tr><td>username:</td><td>data</td></tr>
-                                <tr><td>Member since:</td><td>data</td></tr>
-                                <tr><td>Last online:</td><td>data</td></tr>
+                                <tr><td><b>Account Info:</b></td><td> </td></tr>
+                                <tr><td> </td><td> </td></tr>
+                                <tr><td>Username:</td><td>{{username}}</td></tr>
+                                <tr><td>Member since:</td><td>{{dateofcreation}}</td></tr>
+                                <tr><td>Last online:</td><td>{{lastonlinedate}}</td></tr>
                             </table>
                         </div>
                         <div class="profile-grid-row_2-grid-col_2-grid-row2-grid-col2">
-                            <b>Additional Info:</b><br>
                             <table>
-                                <tr><td>Contact no:</td><td>data</td></tr>
-                                <tr><td>email:</td><td>data</td></tr>
-                                <tr><td>website:</td><td>data</td></tr>
-                                <tr><td>interested in:</td><td>data</td></tr>
-                                <tr><td>date of birth:</td><td>data</td></tr>
+                                <tr><td><b>Additional Info:</b></td><td> </td></tr>
+                                <tr><td> </td><td> </td></tr>
+                                <tr><td>Contact No:</td><td>{{contact}}</td></tr>
+                                <tr><td>Uni email:</td><td>{{email}}</td></tr>
+                                <tr><td>Personal email:</td><td>{{personalEmail}}</td></tr>
+                                <tr><td>Website:</td><td>{{website}}</td></tr>
+                                <tr><td>Interested in:</td><td>{{interestedIn}}</td></tr>
+                                <tr><td>Date of birth:</td><td>{{dateOfBirth}}</td></tr>
                             </table>
                         </div>
                     </div>

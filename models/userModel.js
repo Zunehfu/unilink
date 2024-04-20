@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
+    name: {
+        type: String,
+        default: null,
+        trim: true
+    },
     email: {
         type: String,
         required: [true, '`email` is a required field!'],
@@ -25,31 +30,56 @@ const userSchema = new mongoose.Schema({
     },
     lastOnline: {
         type: Date,
-        required: [true, '`lastOnline` is a required field!']
+        default: Date.now()
     },
     age: {
         type: Number,
-        required: [true, '`age` is a required field!']
+        default: null
     },
     university: {
         type: String,
-        required: [true, '`university` is a required field!'],
-        minlength: 8
+        required: [true, '`university` is a required field!']
     },
-    age: {
+    major: {
         type: String,
-        required: [true, '`pass` is a required field!'],
-        minlength: 8
+        default: null
     },
-    intake: {
+    batch: {
         type: Number,
-        required: [true, '`age` is a required field!']
+        default: null
+    },
+    relationshipStatus: {
+        type: String,
+        default: null
+    },
+    gender: {
+        type: String,
+        default: null
+    },
+    contact: {
+        type: String,
+        default: null
     },
     relationship: {
         type: String,
-        required: [true, '`pass` is a required field!'],
-        minlength: 8
+        default: null
     },
+    personalEmail: {
+        type: String,
+        default: null
+    },
+    website: {
+        type: String,
+        default: null
+    },
+    interestedIn: {
+        type: String,
+        default: null
+    },
+    dateOfBirth: {
+        type: String,
+        default: null
+    }
 })
 
 const User = mongoose.model('User', userSchema)

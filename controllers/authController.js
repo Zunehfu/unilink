@@ -21,6 +21,7 @@ exports.verifySignin = async (req, res, next) => {
 
 exports.verifySignup = async (req, res, next) => {
     try {
+        req.body.createdAt = Date.now()
         const user_ = await user.create(req.body)
         res.json(user_)
     } catch (error) {
