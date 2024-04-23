@@ -17,11 +17,9 @@ router.route('/')
     .get((req, res) => { res.redirect('/signin') })
 
 router.route('/signin')
-    .get(authController.getSigninPage)
     .post(authController.verifySignin)
 
 router.route('/signup')
-    .get((req, res) => {res.send('signup page')})
     .post(authController.verifySignup)
 
 router.route('/users')
@@ -30,5 +28,9 @@ router.route('/users')
 router.route('/users/:id')
     .post(authController.protectRoute, userController.updateUserWithId)
     .get(authController.protectRoute, userController.getUserWithId)
+
+router.route('/users/:id/friends')
+    .get(authController.protectRoute, userController.getFriendsWithId)
+    .post(authController.protectRoute, userController.addFriend)
 
 module.exports = router

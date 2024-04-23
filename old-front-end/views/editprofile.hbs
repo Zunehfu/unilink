@@ -27,7 +27,7 @@
     <form action="/users/{{_id}}" method="POST">
     <div class="profile-grid">
         <div class="profile-grid-row_1-grid" style="background-color: rgb(242, 255, 216); margin-bottom: 5px;">
-            <div class="profile-grid-row_1-grid-col_1"><span class="uni">Uni</span><span class="link">Link</span></div>
+            <div class="profile-grid-row_1-grid-col_1"><a href="/posts"><span class="uni">Uni</span></a><a href="/posts"><span class="link">Link</span></a></div>
             <div class="profile-grid-row_1-grid-col_2">
                 <a href="rick"><center>Currently Supported Universities</center></a>
                 <center>No Ads! No business!! Just people!!!</center>
@@ -66,15 +66,37 @@
                             <tr><td>Major:</td><td><input class="data-input" type="text" value="{{major}}" name="major"></td></tr>
                             <tr><td>Batch:</td><td><input class="data-input" type="text" value="{{batch}}" name="batch"></td></tr>
                             <tr><td>Relationship status:</td><td><input class="data-input" type="text" value="{{relationship}}" name="relationship"></td></tr>
-                            <tr><td>Gender:</td><td>
+                            <tr>
+                            <td>Gender:</td>
+                            <td>
                                 <select name="gender">
-                                    <!-- Should reorder per user -->
-                                    <option value="Male">Male</option>
+                                    {{#ifEqual gender "Male"}}
+                                    <option value="Male" selected>Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
-                                    <option value="noshare">I'd prefer not to</option>
+                                    <option value="I'd prefer not to">I'd prefer not to</option>
+                                    {{/ifEqual}}
+                                    {{#ifEqual gender "Female"}}
+                                    <option value="Male">Male</option>
+                                    <option value="Female" selected>Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="I'd prefer not to">I'd prefer not to</option>
+                                    {{/ifEqual}}
+                                    {{#ifEqual gender "Other"}}
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other" selected>Other</option>
+                                    <option value="I'd prefer not to">I'd prefer not to</option>
+                                    {{/ifEqual}}
+                                    {{#ifEqual gender "I'd prefer not to"}}
+                                    <option value="Male">Male</option>
+                                    <option value="Female" selected>Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="I'd prefer not to" selected>I'd prefer not to</option>
+                                    {{/ifEqual}}
                                 </select>
-                            </td></tr>
+                            </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -96,8 +118,29 @@
                             <tr><td>Uni email:</td><td style="word-break: break-all;">{{email}}</td></tr>
                             <tr><td>Personal email:</td><td><input class="data-input" type="text" value="{{personalEmail}}" name="personalEmail"></td></tr>
                             <tr><td>Website:</td><td><input class="data-input" type="text" value="{{website}}" name="website"></td></tr>
-                            <tr><td>Interested in:</td><td><input class="data-input" type="text" value="{{interestedIn}}" name="interestedIn"></td></tr>
-                            <tr><td>Date of birth:</td><td><input class="data-input" type="text" value="{{dateOfBirth}}" name="dateOfBirth"></td></tr>
+                            <tr>
+                            <td>Interested in:</td>
+                            <td>
+                                <select name="interestedIn">
+                                    {{#ifEqual interestedIn "Men"}}
+                                    <option value="Men" selected>Men</option>
+                                    <option value="Women">Women</option>
+                                    <option value="Other">Other</option>
+                                    {{/ifEqual}}
+                                    {{#ifEqual interestedIn "Women"}}
+                                    <option value="Men">Men</option>
+                                    <option value="Women" selected>Women</option>
+                                    <option value="Other">Other</option>
+                                    {{/ifEqual}}
+                                    {{#ifEqual interestedIn "Other"}}
+                                    <option value="Men">Men</option>
+                                    <option value="Women">Women</option>
+                                    <option value="Other" selected>Other</option>
+                                    {{/ifEqual}}
+                                </select>
+                            </td>
+                            </tr>
+                            <tr><td>Date of birth:</td><td><input class="data-input" type="date" value="{{dateOfBirth}}" name="dateOfBirth"></td></tr>
                         </table>
                     </div>
                 </div>

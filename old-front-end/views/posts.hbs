@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Sedan:ital@0;1&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10+Charted&family=Manrope:wght@200..800&family=Martel+Sans:wght@200;300;400;600;700;800;900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Sedan:ital@0;1&display=swap" rel="stylesheet">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10+Charted&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Manrope:wght@200..800&family=Martel+Sans:wght@200;300;400;600;700;800;900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Sedan:ital@0;1&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Jersey+10+Charted&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Manrope:wght@200..800&family=Martel+Sans:wght@200;300;400;600;700;800;900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Sedan:ital@0;1&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/posts.css">
+</head>
+<body>
+    <div class="post-grid">
+        <div class="post-grid-row_1-grid" style="background-color: rgb(242, 255, 216); margin-bottom: 5px;">
+            <div class="post-grid-row_1-grid-col_1"><a href="/posts"><span class="uni">Uni</span></a><a href="/posts"><span class="link">Link</span></a></div>
+            <div class="post-grid-row_1-grid-col_2">
+                <a href="rick"><center>Currently Supported Universities</center></a>
+                <center>No Ads! No business!! Just people!!!</center>
+            </div>
+        </div>
+        <div class="post-grid-row_2-grid">
+            <div class="post-grid-row_2-grid-col_1-grid">
+                <div class="post-grid-row_2-grid-col_1-grid-row_1">
+                    <form action="/posts" method="POST">
+                        <textarea class="input" id="large-input" rows="4" placeholder="Say something nice..." name="inputData" maxlength="500"></textarea><br>
+                        <span style="font-family: Roboto Mono;">Hide Me</span><input type="checkbox" name="hideme"><br>
+                        <button class="btn" type="submit">Let it out!</button>
+                    </form>
+                    <br>
+                    {{#if errorMsg}}
+                    <div class="error-msg">
+                        {{errorMsg}}
+                    </div>
+                    {{/if}}
+                </div>
+                <hr>
+                <div class="post-grid-row_2-grid-col_1-grid-row_2">
+                    {{#each data}}
+                    <div class="post-card">
+                        <div class="content">
+                            <a href="/posts/{{_id}}">
+                            <div class="title">
+                                {{title}}
+                            </div>
+                            </a>
+                            <div class="author">
+                                {{#if isAnonymous}}
+                                    Anonymous
+                                {{else}}
+                                    <a href="/users/{{postedBy}}" class="author-a">{{postedBy}}</a>
+                                {{/if}}
+                            </div>
+                        </div>
+                        <div class="stats">
+                            views: {{views}}<br>
+                            replies: {{reps}}<br>
+                            date: {{date}}<br>
+                            time: {{time}}
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            <div class="post-grid-row_2-grid-col_2">
+                <div class="nav-card">
+                    <a href="/users/{{viewerid}}"><div class="nav-item">My Profile</div></a>
+                    <a href="/users/{{viewerid}}"><div class="nav-item">My Friends</div></a>
+                    <a href="/users/{{viewerid}}"><div class="nav-item">My Messages</div></a>
+                    <a href="/users/{{viewerid}}"><div class="nav-item">My Anonymous Messages</div></a>
+                </div>
+            </div>
+        </div>
+        <div class="post-grid-row_3" style="background-color: rgba(100, 152, 225, 0.989); color: white; margin-top: 5px;">
+                <span class="copyright">&#169; 2024 '4,', Inc.</span> 
+                <span class="dot">&#183;</span>
+                <span class="contact">Contact</span> 
+                <span class="dot">&#183;</span>
+                <span class="privacy">Privacy Policy</span> 
+                <span class="dot">&#183;</span>
+                <span class="terms">Terms & Conditions</span> 
+                <br><br>
+                <span class="slogan">A 4, production</span>
+        </div>
+    </div>
+</body>
+</html>
+

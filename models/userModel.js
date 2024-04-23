@@ -7,16 +7,16 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
-    name: {
-        type: String,
-        default: null,
-        trim: true
-    },
     email: {
         type: String,
         required: [true, '`email` is a required field!'],
         unique: true,
         lowercase:true,
+        trim: true
+    },
+    name: {
+        type: String,
+        default: null,
         trim: true
     },
     pass: {
@@ -79,7 +79,19 @@ const userSchema = new mongoose.Schema({
     dateOfBirth: {
         type: String,
         default: null
-    }
+    },
+    friends: [mongoose.Schema({
+        friendId: {
+            type: String,
+            required: [true, '`friendId` is a required field!']
+        }
+    })],
+    friendRequests: [mongoose.Schema({
+        id: {
+            type: String,
+            required: [true, '`id` is a required field!']
+        }
+    })]
 })
 
 const User = mongoose.model('User', userSchema)
