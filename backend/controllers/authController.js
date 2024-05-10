@@ -1,12 +1,15 @@
 const user = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
-exports.protectRoute = async (req, res, next) => {
+exports.validate = async (req, res, next) => {
     try {
-        let token = req.cookies.unilinkJWT;
+        const token = req.headers.authorization;
+        console.log(token);
 
         if (!token) {
-            return res.redirect("/signin");
+            return res.json({
+                auth: false,
+            });
         }
 
         const decodedToken = jwt.verify(token, process.env.SECRET_STR);
@@ -18,7 +21,40 @@ exports.protectRoute = async (req, res, next) => {
         );
 
         if (!user_) {
-            return res.redirect("/signin");
+            return res.json({
+                auth: false,
+            });
+        }
+
+        res.json({});
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+exports.protectRoute = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization;
+        console.log(token);
+
+        if (!token) {
+            return res.json({
+                auth: false,
+            });
+        }
+
+        const decodedToken = jwt.verify(token, process.env.SECRET_STR);
+
+        const user_ = await user.findByIdAndUpdate(
+            decodedToken.id,
+            { lastOnline: Date.now() },
+            { new: true }
+        );
+
+        if (!user_) {
+            return res.json({
+                auth: false,
+            });
         }
 
         req.user = user_;
@@ -42,13 +78,10 @@ exports.verifySignin = async (req, res, next) => {
         expiresIn: process.env.LOGIN_EXPIRES,
     });
 
-    res.cookie("unilinkJWT", token, {
-        expires: new Date(Date.now() + parseInt(process.env.LOGIN_EXPIRES)),
-        secure: false,
-        httpOnly: false,
+    res.json({
+        token,
+        expires: parseInt(process.env.LOGIN_EXPIRES) / (1000 * 60 * 60 * 24),
     });
-
-    res.redirect("/posts");
 };
 
 exports.verifySignup = async (req, res, next) => {

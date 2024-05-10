@@ -6,6 +6,7 @@ exports.addPost = async (req, res, next) => {
         if (req.body.hideme) is_anon = true;
 
         console.log(req.user);
+        console.log(req.body);
 
         await post.create({
             content: req.body.content,
@@ -15,11 +16,7 @@ exports.addPost = async (req, res, next) => {
             isAnonymous: is_anon,
         });
 
-        console.log(Date.now());
-
-        let post_ = await post.find().sort({ lastReplyTimestamp: -1 });
-
-        res.json(post_);
+        res.json({ success: true });
     } catch (err) {
         next(err);
     }
