@@ -3,18 +3,19 @@ import SmallSpinner from "./SmallSpinner";
 import pfetch from "../controllers/pfetch";
 import { useNavigate } from "react-router-dom";
 
-export default function AddPostPage({ toggleAddPostVisibility }) {
+export default function AddPostPage({
+    toggleAddPostVisibility,
+    setPosts,
+    posts,
+}) {
     const [content, setContent] = useState("");
     const [hideme, setHideme] = useState(false);
     const [option, setOption] = useState(0);
     const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
-    async function handleSubmission(data) {
-        if (loading) return;
-
-        setLoading(true);
-
+    async function handleSubmission() {
         try {
             const res = await pfetch("/posts", {
                 method: "POST",
@@ -31,10 +32,13 @@ export default function AddPostPage({ toggleAddPostVisibility }) {
             const data = await res.json();
             console.log("Response data:", data);
 
-            if (data.auth) navigate("/signin");
+            setPosts([data, ...posts]);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
+            setContent("");
+            setHideme(false);
+            setOption(0);
             setLoading(false);
         }
     }
@@ -51,7 +55,7 @@ export default function AddPostPage({ toggleAddPostVisibility }) {
                 <textarea
                     className="rounded-lg  resize-none w-full h-60 p-2"
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={(e) => !loading && setContent(e.target.value)}
                 ></textarea>
                 <br />
                 <div>Wanna express freely?</div>
@@ -60,7 +64,7 @@ export default function AddPostPage({ toggleAddPostVisibility }) {
                     type="checkbox"
                     id="hideme"
                     checked={hideme}
-                    onChange={() => setHideme(!hideme)}
+                    onChange={() => !loading && setHideme(!hideme)}
                 />
                 <br />
                 <br />
@@ -71,7 +75,7 @@ export default function AddPostPage({ toggleAddPostVisibility }) {
                     name="options"
                     value="0"
                     checked={option === 0}
-                    onChange={() => setOption(0)}
+                    onChange={() => !loading && setOption(0)}
                 />
                 <label htmlFor="option1">Share with everyone</label> <br />
                 <input
@@ -79,7 +83,7 @@ export default function AddPostPage({ toggleAddPostVisibility }) {
                     id="option2"
                     name="options"
                     checked={option === 1}
-                    onChange={() => setOption(1)}
+                    onChange={() => !loading && setOption(1)}
                 />
                 <label htmlFor="option2">
                     Share with others from your university
@@ -90,7 +94,7 @@ export default function AddPostPage({ toggleAddPostVisibility }) {
                     id="option3"
                     name="options"
                     checked={option === 2}
-                    onChange={() => setOption(2)}
+                    onChange={() => !loading && setOption(2)}
                 />
                 <label htmlFor="option3">Share with friends</label> <br />
                 <input
@@ -98,15 +102,20 @@ export default function AddPostPage({ toggleAddPostVisibility }) {
                     id="option4"
                     name="options"
                     checked={option === 3}
-                    onChange={() => setOption(3)}
+                    onChange={() => !loading && setOption(3)}
                 />
                 <label htmlFor="option4">
                     Share with friends from your university
                 </label>
                 <br />
                 <button
-                    className="bg-green-300 w-20 h-8"
-                    onClick={handleSubmission}
+                    className="rounded-xl bg-green-300 w-20 h-8 flex justify-center items-center"
+                    onClick={() => {
+                        if (!loading) {
+                            setLoading(true);
+                            handleSubmission();
+                        }
+                    }}
                 >
                     {loading ? <SmallSpinner /> : <span>Share</span>}
                 </button>

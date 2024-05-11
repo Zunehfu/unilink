@@ -1,10 +1,17 @@
 import React from "react";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function SmallSpinner() {
     return (
-        <div
-            className="inline-block h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
-            role="status"
-        ></div>
+        <ThreeDots
+            visible={true}
+            height="40"
+            width="40"
+            color="#4fa94d"
+            radius="9"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+        />
     );
 }

@@ -3,7 +3,7 @@ import Logo from "./Logo";
 
 export default function Header() {
     return (
-        <div className="flex fixed top-0 left-0 right-0 bg-white shadow-sm">
+        <div className="flex fixed z-30 top-0 left-0 right-0 bg-white shadow-sm">
             <div className="w-fit mb-2">
                 <Logo />
             </div>

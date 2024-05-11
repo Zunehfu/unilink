@@ -1,6 +1,4 @@
-import React from "react";
-
-export default function AddPost({ toggleAddPostVisibility }) {
+export default function AddPostButton({ toggleAddPostVisibility }) {
     return (
         <div
             onClick={toggleAddPostVisibility}

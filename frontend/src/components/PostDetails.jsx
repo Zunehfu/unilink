@@ -1,9 +1,9 @@
-export default function PostDetails() {
+export default function PostDetails({ postedBy, timestamp }) {
     return (
         <div className="h-6 flex justify-between">
-            <div>Author</div>
+            <div>{postedBy}</div>
             <div>
-                <small>date</small>
+                <small>{timestamp}</small>
             </div>
         </div>
     );

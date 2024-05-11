@@ -2,21 +2,19 @@ const post = require("../models/postModel");
 
 exports.addPost = async (req, res, next) => {
     try {
-        let is_anon = false;
-        if (req.body.hideme) is_anon = true;
-
         console.log(req.user);
         console.log(req.body);
 
-        await post.create({
+        const post_ = await post.create({
             content: req.body.content,
             postedBy: req.user._id,
             timestamp: Date.now(),
             lastReplyTimestamp: Date.now(),
-            isAnonymous: is_anon,
+            isAnonymous: req.body.hideme,
+            visibility: req.body.visibility,
         });
 
-        res.json({ success: true });
+        res.json(post_);
     } catch (err) {
         next(err);
     }

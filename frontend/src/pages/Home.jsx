@@ -1,14 +1,16 @@
 import Header from "../components/Header";
 import PostWall from "../components/PostWall";
-import AddPost from "../components/AddPost";
 import AddPostPage from "../components/AddPostPage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import pfetch from "../controllers/pfetch";
 import Loader from "../components/Loader";
+import AddPostButton from "../components/AddPostButton";
 
 export default function Home() {
     const navigate = useNavigate();
+
+    const [posts, setPosts] = useState([]);
 
     const [addPostVisibility, setAddPostVisibility] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -52,13 +54,15 @@ export default function Home() {
             ) : (
                 <div>
                     <Header />
-                    <AddPost
+                    <AddPostButton
                         toggleAddPostVisibility={toggleAddPostVisibility}
                     />
-                    <PostWall />
+                    <PostWall posts={posts} setPosts={setPosts} />
                     {addPostVisibility && (
                         <AddPostPage
                             toggleAddPostVisibility={toggleAddPostVisibility}
+                            posts={posts}
+                            setPosts={setPosts}
                         />
                     )}
                 </div>
