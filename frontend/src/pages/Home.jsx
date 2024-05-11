@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import pfetch from "../controllers/pfetch";
 import Loader from "../components/Loader";
 import AddPostButton from "../components/AddPostButton";
+import { redirect } from "react-router-dom";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -35,8 +36,8 @@ export default function Home() {
 
                 const data = await res.json();
                 console.log("Response data:", data);
-
-                if (data.auth) navigate("/signin");
+                console.log(data);
+                if (data.hasOwnProperty("auth")) return navigate("/signin");
             } catch (err) {
                 console.error("Fetch error:", err);
             } finally {
@@ -57,12 +58,17 @@ export default function Home() {
                     <AddPostButton
                         toggleAddPostVisibility={toggleAddPostVisibility}
                     />
-                    <PostWall posts={posts} setPosts={setPosts} />
+                    <PostWall
+                        posts={posts}
+                        setPosts={setPosts}
+                        navigate={navigate}
+                    />
                     {addPostVisibility && (
                         <AddPostPage
                             toggleAddPostVisibility={toggleAddPostVisibility}
                             posts={posts}
                             setPosts={setPosts}
+                            navigate={navigate}
                         />
                     )}
                 </div>

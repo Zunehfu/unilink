@@ -16,20 +16,7 @@ exports.addPost = async (req, res, next) => {
 
         res.json(post_);
     } catch (err) {
-        next(err);
-    }
-};
-
-exports.addPostErrorHandler = async (err, req, res, next) => {
-    try {
-        let post_ = await post.find().sort({ lastReplyTimestamp: -1 });
-
-        res.json({
-            data: post_,
-            err,
-        });
-    } catch (error) {
-        res.json(error);
+        res.json(err);
     }
 };
 
@@ -78,26 +65,11 @@ exports.addToPostPage = async (req, res, next) => {
                 },
                 $set: { lastReplyTimestamp: Date.now() },
             },
-            { runValidators: true }
+            { runValidators: true, new: true }
         );
 
-        res.redirect("/posts/" + id);
+        res.json(post_.replies);
     } catch (err) {
-        next(err);
-    }
-};
-
-exports.addToPostPageErrorHandler = async (err, req, res, next) => {
-    try {
-        const id = req.params.id;
-
-        const post_ = await post.findById(id);
-
-        res.json({
-            data: post_,
-            err,
-        });
-    } catch (error) {
-        res.json(error);
+        res.json(err);
     }
 };

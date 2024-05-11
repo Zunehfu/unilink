@@ -5,8 +5,6 @@ import "./index.css";
 
 import Home from "./pages/Home";
 import SigninPage from "./pages/SigninPage";
-import Loader from "./components/Loader";
-import SmallSpinner from "./components/SmallSpinner";
 
 const router = createBrowserRouter([
     {

@@ -8,20 +8,12 @@ const router = express.Router();
 router
     .route("/posts")
     .get(authController.protectRoute, postController.getAllPosts)
-    .post(
-        authController.protectRoute,
-        postController.addPost,
-        postController.addPostErrorHandler
-    );
+    .post(authController.protectRoute, postController.addPost);
 
 router
     .route("/posts/:id")
     .get(authController.protectRoute, postController.getPostPage)
-    .post(
-        authController.protectRoute,
-        postController.addToPostPage,
-        postController.addToPostPageErrorHandler
-    );
+    .post(authController.protectRoute, postController.addToPostPage);
 
 router.route("/signin").post(authController.verifySignin);
 

@@ -2,8 +2,10 @@ import PostDetails from "./PostDetails";
 import PostStats from "./PostStats";
 import PostContent from "./PostContent";
 import Replies from "./Replies";
+import { useState } from "react";
 
-export default function PostText({ postData }) {
+export default function PostText({ postData, navigate }) {
+    const [replies, setReplies] = useState(postData.replies);
     return (
         <>
             <div className="border-2 w-96 m-2 border-green-200 rounded">
@@ -14,11 +16,13 @@ export default function PostText({ postData }) {
                     timestamp={postData.timestamp}
                 />
                 <PostStats
-                    replies={postData.replies.length}
                     postId={postData._id}
+                    replies={replies}
+                    setReplies={setReplies}
+                    navigate={navigate}
                 />
             </div>
-            <Replies replies={postData.replies} />
+            <Replies replies={replies} />
         </>
     );
 }

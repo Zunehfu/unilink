@@ -3,9 +3,8 @@ import PostText from "./PostText";
 import { useState } from "react";
 import pfetch from "../controllers/pfetch";
 import SmallSpinner from "./SmallSpinner";
-import Replies from "./Replies";
 
-export default function PostWall({ posts, setPosts }) {
+export default function PostWall({ posts, setPosts, navigate }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -22,6 +21,7 @@ export default function PostWall({ posts, setPosts }) {
 
                 const data = await res.json();
                 console.log("Response data:", data);
+                if (data.hasOwnProperty("auth")) return navigate("/signin");
                 setPosts(data);
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -36,13 +36,14 @@ export default function PostWall({ posts, setPosts }) {
     return loading ? (
         <SmallSpinner />
     ) : (
-        <div className="grid place-items-center">
+        <div className="grid place-items-center mt-20">
             {posts.map((item) => (
                 <PostText
                     key={item._id}
                     postData={item}
                     posts={posts}
                     setPosts={setPosts}
+                    navigate={navigate}
                 />
             ))}
         </div>

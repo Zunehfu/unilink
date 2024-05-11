@@ -1,7 +1,7 @@
 import { useState } from "react";
 import pfetch from "../controllers/pfetch";
 
-export default function PostStats({ replies, postId }) {
+export default function PostStats({ replies, setReplies, postId, navigate }) {
     const [content, setContent] = useState("");
 
     async function handleSubmission() {
@@ -20,6 +20,8 @@ export default function PostStats({ replies, postId }) {
 
             const data = await res.json();
             console.log("Response data:", data);
+            if (data.hasOwnProperty("auth")) return navigate("/signin");
+            setReplies(data);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
@@ -31,7 +33,7 @@ export default function PostStats({ replies, postId }) {
         <div className="h-9 flex justify-around items-center">
             <div>
                 <small>991</small> <i className="fa-regular fa-heart"></i> |{" "}
-                <small>{replies}</small>{" "}
+                <small>{replies.length}</small>{" "}
                 <i className="fa-regular fa-comment"></i>
             </div>
             <div>

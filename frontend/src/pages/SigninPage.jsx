@@ -2,11 +2,12 @@ import { useState } from "react";
 import Logo from "../components/Logo";
 import pfetch from "../controllers/pfetch";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function SigninPage() {
     const [username, setUsername] = useState("");
     const [pass, setPass] = useState("");
-
+    const navigate = useNavigate();
     async function handleSignin() {
         try {
             const res = await pfetch("/signin", {
@@ -28,6 +29,7 @@ export default function SigninPage() {
             console.log("Response data:", data);
 
             Cookies.set("token", data.token, { expires: data.expires });
+            navigate("/");
         } catch (err) {
             console.error("Fetch error:", err);
         }

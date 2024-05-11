@@ -7,13 +7,12 @@ export default function AddPostPage({
     toggleAddPostVisibility,
     setPosts,
     posts,
+    navigate,
 }) {
     const [content, setContent] = useState("");
     const [hideme, setHideme] = useState(false);
     const [option, setOption] = useState(0);
     const [loading, setLoading] = useState(false);
-
-    const navigate = useNavigate();
 
     async function handleSubmission() {
         try {
@@ -32,6 +31,7 @@ export default function AddPostPage({
             const data = await res.json();
             console.log("Response data:", data);
 
+            if (data.hasOwnProperty("auth")) return navigate("/signin");
             setPosts([data, ...posts]);
         } catch (err) {
             console.error("Fetch error:", err);
