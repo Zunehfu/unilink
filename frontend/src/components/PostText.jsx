@@ -4,7 +4,7 @@ import PostContent from "./PostContent";
 import Replies from "./Replies";
 import { useState } from "react";
 
-export default function PostText({ postData, navigate }) {
+export default function PostText({ postData }) {
     const [replies, setReplies] = useState(postData.replies);
     return (
         <>
@@ -19,7 +19,6 @@ export default function PostText({ postData, navigate }) {
                     postId={postData._id}
                     replies={replies}
                     setReplies={setReplies}
-                    navigate={navigate}
                 />
             </div>
             <Replies replies={replies} />

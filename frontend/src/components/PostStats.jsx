@@ -1,8 +1,10 @@
 import { useState } from "react";
 import pfetch from "../controllers/pfetch";
+import { useNavigate } from "react-router-dom";
 
-export default function PostStats({ replies, setReplies, postId, navigate }) {
+export default function PostStats({ replies, setReplies, postId }) {
     const [content, setContent] = useState("");
+    const navigate = useNavigate();
 
     async function handleSubmission() {
         try {

@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 
 export default function PostDescription() {
-    const [height, setHeight] = useState(36); // Initial height value
+    const [height, setHeight] = useState(36); //
     const [toggle, setToggle] = useState(false); // Initial toggle state
 
     const handleClick = () => {
-        // Toggle between two height values based on the toggle state
         if (toggle) {
-            setHeight(36); // Revert back to the original height
+            setHeight(36);
         } else {
-            setHeight(200); // Increase the height
+            setHeight(200);
         }
-        // Toggle the boolean state
         setToggle(!toggle);
     };
 

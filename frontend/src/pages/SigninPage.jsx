@@ -8,6 +8,7 @@ export default function SigninPage() {
     const [username, setUsername] = useState("");
     const [pass, setPass] = useState("");
     const navigate = useNavigate();
+
     async function handleSignin() {
         try {
             const res = await pfetch("/signin", {

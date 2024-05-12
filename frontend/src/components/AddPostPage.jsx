@@ -7,12 +7,13 @@ export default function AddPostPage({
     toggleAddPostVisibility,
     setPosts,
     posts,
-    navigate,
 }) {
     const [content, setContent] = useState("");
     const [hideme, setHideme] = useState(false);
     const [option, setOption] = useState(0);
     const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
 
     async function handleSubmission() {
         try {

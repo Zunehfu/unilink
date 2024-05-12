@@ -22,9 +22,13 @@ exports.addPost = async (req, res, next) => {
 
 exports.getAllPosts = async (req, res, next) => {
     try {
-        let post_ = await post.find().sort({ lastReplyTimestamp: -1 });
-
-        res.json(post_);
+        console.log("new request");
+        const from = parseInt(req.query.from);
+        let post_ = await post.find();
+        const to = from + 5 > post_.length ? post_.length : from + 10;
+        console.log([from, to]);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        res.json(post_.slice(from, to));
     } catch (error) {
         res.json(error);
     }
