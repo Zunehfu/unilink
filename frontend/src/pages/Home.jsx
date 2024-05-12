@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import pfetch from "../controllers/pfetch";
 import Loader from "../components/Loader";
 import AddPostButton from "../components/AddPostButton";
+import Profile from "../components/Profile";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -14,6 +15,11 @@ export default function Home() {
 
     const [addPostVisibility, setAddPostVisibility] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [profileVisibility, setProfileVisibility] = useState(false);
+
+    function toggleProfileVisibility() {
+        setProfileVisibility(!profileVisibility);
+    }
 
     function toggleAddPostVisibility() {
         setAddPostVisibility(!addPostVisibility);
@@ -51,7 +57,7 @@ export default function Home() {
                 <Loader />
             ) : (
                 <div>
-                    <Header />
+                    <Header toggleProfileVisibility={toggleProfileVisibility} />
                     <AddPostButton
                         toggleAddPostVisibility={toggleAddPostVisibility}
                     />
@@ -61,6 +67,11 @@ export default function Home() {
                             toggleAddPostVisibility={toggleAddPostVisibility}
                             posts={posts}
                             setPosts={setPosts}
+                        />
+                    )}
+                    {profileVisibility && (
+                        <Profile
+                            toggleProfileVisibility={toggleProfileVisibility}
                         />
                     )}
                 </div>

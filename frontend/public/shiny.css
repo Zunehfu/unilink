@@ -1,38 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+$duration: 5s;
+$text-color: rgba(255, 255, 255, 0.3);
+$bgr-color: #333;
+html {
+    background-color: $bgr-color;
+    text-align: center;
+}
 
 body {
-    user-select: none;
+    padding-top: 3em;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-input:focus,
-textarea:focus {
-    outline: none;
-}
-
-::-webkit-scrollbar {
-    width: 3px;
-}
-::-webkit-scrollbar-track {
-    display: none;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgb(4, 201, 136);
-    border-radius: 8px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(0, 131, 87);
-    border-radius: 10px;
-}
 .shine,
 .chrome {
     font-size: 3em;
@@ -40,6 +17,7 @@ textarea:focus {
     margin-bottom: 1em;
     font-weight: bold;
 }
+
 .shine {
     background: #222 -webkit-gradient(
             linear,
@@ -50,13 +28,14 @@ textarea:focus {
             color-stop(0.5, #fff)
         ) 0 0 no-repeat;
     -webkit-background-size: 150px;
-    color: rgba(255, 255, 255, 0.3);
+    color: $text-color;
     -webkit-background-clip: text;
     -webkit-animation-name: shine;
-    -webkit-animation-duration: 5s;
+    -webkit-animation-duration: $duration;
     -webkit-animation-iteration-count: infinite;
     text-shadow: 0 0px 0px rgba(255, 255, 255, 0.5);
 }
+
 .chrome {
     background: #222 -webkit-gradient(
             linear,
@@ -75,10 +54,10 @@ textarea:focus {
         transparent 100%
     );
     -webkit-background-size: 200px;
-    color: rgba(255, 255, 255, 0.3);
+    color: $text-color;
     -webkit-background-clip: text;
     -webkit-animation-name: shine;
-    -webkit-animation-duration: 5s;
+    -webkit-animation-duration: $duration;
     -webkit-animation-iteration-count: infinite;
     text-shadow: 0 0px 0px rgba(255, 255, 255, 0.5);
 }

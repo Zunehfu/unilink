@@ -1,6 +1,9 @@
-export default function HeaderItem({ item }) {
+export default function HeaderItem({ item, toggleProfileVisibility }) {
     return (
-        <div className="inline-flex hover:underline items-end cursor-pointer">
+        <div
+            onClick={toggleProfileVisibility}
+            className="inline-flex hover:underline items-end cursor-pointer"
+        >
             {item}
         </div>
     );

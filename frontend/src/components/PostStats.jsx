@@ -2,7 +2,12 @@ import { useState } from "react";
 import pfetch from "../controllers/pfetch";
 import { useNavigate } from "react-router-dom";
 
-export default function PostStats({ replies, setReplies, postId }) {
+export default function PostStats({
+    replies,
+    setReplies,
+    postId,
+    toggleReplyVisibility,
+}) {
     const [content, setContent] = useState("");
     const navigate = useNavigate();
 
@@ -36,7 +41,10 @@ export default function PostStats({ replies, setReplies, postId }) {
             <div>
                 <small>991</small> <i className="fa-regular fa-heart"></i> |{" "}
                 <small>{replies.length}</small>{" "}
-                <i className="fa-regular fa-comment"></i>
+                <i
+                    onClick={toggleReplyVisibility}
+                    className="fa-regular fa-comment cursor-pointer"
+                ></i>
             </div>
             <div>
                 <input
