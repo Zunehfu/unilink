@@ -26,7 +26,6 @@ export default function PostWall({ posts, setPosts }) {
             console.log("Response data:", data);
             if (data.hasOwnProperty("auth")) return navigate("/signin");
             setPosts([...posts, ...data]);
-            console.log("posts print", posts);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
@@ -35,12 +34,11 @@ export default function PostWall({ posts, setPosts }) {
     }
 
     function handleScroll() {
-        console.log("listening", posts.length);
         console.log(
             window.innerHeight + document.documentElement.scrollTop <
                 document.documentElement.offsetHeight
         );
-
+        console.log("loading", loading);
         if (
             window.innerHeight + document.documentElement.scrollTop <
                 document.documentElement.offsetHeight ||
@@ -57,13 +55,21 @@ export default function PostWall({ posts, setPosts }) {
     useEffect(() => {
         setLoading(true);
         fetchPosts();
+    }, []);
 
-        window.addEventListener("scroll", handleScroll);
+    useEffect(() => {
+        console.log("this is updated!");
+        console.log(posts);
+    }, [posts]);
+
+    useEffect(() => {
+        if (loading) window.removeEventListener("scroll", handleScroll);
+        else window.addEventListener("scroll", handleScroll);
 
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
-    }, []);
+    }, [loading]);
 
     return (
         <div className="grid place-items-center mt-20">
