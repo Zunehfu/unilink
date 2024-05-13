@@ -112,3 +112,13 @@ exports.addFriend = async (req, res, next) => {
         res.json(error);
     }
 };
+
+exports.betaresponse = async (req, res, next) => {
+    try {
+        console.log("betaresponse req recieved!");
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        res.json({ hello: "lmfao" });
+    } catch (error) {
+        res.json(error);
+    }
+};

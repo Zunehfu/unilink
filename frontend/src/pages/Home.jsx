@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import pfetch from "../controllers/pfetch";
 import Loader from "../components/Loader";
 import AddPostButton from "../components/AddPostButton";
+import MyProfile from "../components/MyProfile";
 import Profile from "../components/Profile";
 
 export default function Home() {

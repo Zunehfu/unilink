@@ -35,4 +35,8 @@ router
 
 router.route("/validate").get(authController.validate);
 
+router
+    .route("/betaresponse")
+    .get(authController.protectRoute, userController.betaresponse);
+
 module.exports = router;
