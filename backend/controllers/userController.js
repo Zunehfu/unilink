@@ -1,124 +1,155 @@
-const user = require("../models/userModel");
-const jwt = require("jsonwebtoken");
+const pool = require("../database");
 const moment = require("moment");
 
-exports.getAllUsers = async (req, res, next) => {
-    try {
-        const user_ = await user.find();
-        res.json(user_);
-    } catch (error) {
-        res.json(error);
-    }
-};
+const get_user_prepared_stmt__user_id = `SELECT * FROM users WHERE user_id = ?`;
 
 exports.getUserWithId = async (req, res, next) => {
     try {
-        if (req.user._id == req.params.id) {
-            if (req.query.edit === "true") {
-                req.user.dateofcreation = moment(req.user.createdAt).format(
-                    "YYYY-MM-DD"
-                );
-                req.user.lastonlinedate = moment(req.user.lastOnline).format(
-                    "YYYY-MM-DD hh:mm A"
-                );
+        console.log(req.query);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
 
-                return res.json(req.user);
-            } else {
-                req.user.dateofcreation = moment(req.user.createdAt).format(
-                    "YYYY-MM-DD"
-                );
-                req.user.lastonlinedate = moment(req.user.lastOnline).format(
-                    "YYYY-MM-DD hh:mm A"
-                );
+        const [rows] = await pool.query(get_user_prepared_stmt__user_id, [
+            req.query.id == "myprofile" ? req.user.user_id : req.query.user_id,
+        ]);
 
-                return res.json(req.user);
-            }
-        }
+        const user_ = rows[0];
 
-        const user_ = await user.findById(req.params.id);
-        if (!user_) return res.json("Unable to find the user!");
+        if (!user_)
+            return res.json({
+                status: "ERROR",
+                code: "INVALID_USER_ID",
+                data: {
+                    message: "This person doesn't exist",
+                },
+            });
 
-        user_.createdAt_formatted = moment(user_.createdAt).format(
-            "YYYY-MM-DD"
-        );
-        user_.lastOnline_formatted = moment(user_.lastOnline).format(
-            "YYYY-MM-DD hh:mm A"
-        );
+        // user_.lastOnline_formatted = moment(user_.lastOnline).format(
+        //     "YYYY-MM-DD hh:mm A"
+        // );
 
-        res.json(user_);
-    } catch (error) {
-        res.json(error);
-    }
-};
-
-exports.updateUserWithId = async (req, res, next) => {
-    try {
-        await user.findByIdAndUpdate(req.user._id, {
-            name: req.body.name,
-            age: req.body.age,
-            major: req.body.major,
-            batch: req.body.batch,
-            relationship: req.body.relationship,
-            gender: req.body.gender,
-            username: req.body.username,
-            contact: req.body.contact,
-            personalEmail: req.body.personalEmail,
-            website: req.body.website,
-            interestedIn: req.body.interestedIn,
-            dateOfBirth: req.body.dateOfBirth,
+        console.log({
+            data: {
+                name: user_.name,
+                created_at: moment(user_.created_at).format("YYYY-MM-DD"),
+                age: user_.age,
+                major: user_.major,
+                batch: user_.batch,
+                relationship_status: user_.relationship_status,
+                gender: user_.gender,
+                username: user_.username,
+                university: user_.university,
+                contact: user_.contact,
+                email: user_.email,
+                personal_email: user_.personal_email,
+                website: user_.website,
+                interested_in: user_.interested_in,
+                birth_date: user_.birth_date,
+            },
         });
 
-        res.redirect("/users/" + req.user._id);
-    } catch (error) {
-        res.json(error);
-    }
-};
-
-exports.getFriendsWithId = async (req, res, next) => {
-    try {
-        if (req.user._id == req.params.id) {
-            console.log(req.user.friends);
-            return res.json(req.user.friends);
-        }
-
-        const user_ = await user.findById(req.params.id);
-        if (!user_) return res.json("Unable to find the user!");
-
-        res.json(user_.friends);
-    } catch (error) {
-        res.json(error);
-    }
-};
-
-exports.addFriend = async (req, res, next) => {
-    try {
-        if (req.user._id == req.params.id)
-            return res.json("You are always your friend :D");
-
-        await user.findByIdAndUpdate(
-            req.user._id,
-            { $push: { friends: { friendId: req.params.id } } },
-            { runValidators: true }
-        );
-        const user_ = await user.findByIdAndUpdate(
-            req.params.id,
-            { $push: { friends: { friendId: req.user._id } } },
-            { new: true, runValidators: true }
-        );
-        if (!user_) return res.json("Unable to find the user!");
-
-        res.redirect("/users/" + req.params.id);
-    } catch (error) {
-        res.json(error);
+        res.json({
+            status: "SUCCESS",
+            code: "NONE",
+            data: {
+                name: user_.name,
+                created_at: moment(user_.created_at).format("YYYY-MM-DD"),
+                age: user_.age,
+                major: user_.major,
+                batch: user_.batch,
+                relationship_status: user_.relationship_status,
+                gender: user_.gender,
+                username: user_.username,
+                university: user_.university,
+                contact: user_.contact,
+                email: user_.email,
+                personal_email: user_.personal_email,
+                website: user_.website,
+                interested_in: user_.interested_in,
+                birth_date: user_.birth_date,
+            },
+        });
+    } catch (err) {
+        res.json({
+            status: "ERROR",
+            code: "CATCH_ERROR",
+            data: {
+                message: err.message,
+            },
+        });
     }
 };
 
 exports.betaresponse = async (req, res, next) => {
     try {
         console.log("betaresponse req recieved!");
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-        res.json({ hello: "lmfao" });
-    } catch (error) {
-        res.json(error);
+        console.log(req.body);
+
+        let sql = "";
+
+        const field = req.body.field;
+
+        if (field === "Username") {
+            sql = "UPDATE users SET username = ? WHERE user_id = ?";
+        } else if (field === "Name") {
+            sql = "UPDATE users SET name = ? WHERE user_id = ?";
+        } else if (field === "Age") {
+            sql = "UPDATE users SET age = ? WHERE user_id = ?";
+        } else if (field === "Major") {
+            sql = "UPDATE users SET major = ? WHERE user_id = ?";
+        } else if (field === "Batch") {
+            sql = "UPDATE users SET batch = ? WHERE user_id = ?";
+        } else if (field === "Relationship status") {
+            sql = "UPDATE users SET relationship_status = ? WHERE user_id = ?";
+        } else if (field === "Gender") {
+            sql = "UPDATE users SET gender = ? WHERE user_id = ?";
+        } else if (field === "Contact No") {
+            sql = "UPDATE users SET contact = ? WHERE user_id = ?";
+        } else if (field === "Personal email") {
+            sql = "UPDATE users SET personal_email = ? WHERE user_id = ?";
+        } else if (field === "Personal website") {
+            sql = "UPDATE users SET website = ? WHERE user_id = ?";
+        } else if (field === "Interested in") {
+            sql = "UPDATE users SET interested_in = ? WHERE user_id = ?";
+        } else if (field === "Date of birth") {
+            sql = "UPDATE users SET birth_date = ? WHERE user_id = ?";
+        } else {
+            return res.json({
+                status: "ERROR",
+                code: "INVALID_PROFILE_FIELD",
+                data: {
+                    message: "Cannot be updated at the moment!",
+                },
+            });
+        }
+
+        console.log(sql);
+
+        const [results] = await pool.query(sql, [
+            req.body.value,
+            req.user.user_id,
+        ]);
+        console.log(results);
+
+        if (results.changedRows != 1) {
+            return res.json({
+                status: "ERROR",
+                code: "DATABASE_UPDATE_FAILED",
+                data: { message: "Something went wrong!" },
+            });
+        }
+
+        res.json({
+            status: "SUCCESS",
+            code: "NONE",
+            data: { message: "Profile updated successfully!" },
+        });
+    } catch (err) {
+        res.json({
+            status: "ERROR",
+            code: "CATCH_ERROR",
+            data: {
+                message: err.message,
+            },
+        });
     }
 };

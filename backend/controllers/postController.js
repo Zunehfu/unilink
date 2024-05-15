@@ -1,79 +1,156 @@
-const post = require("../models/postModel");
+const pool = require("../database");
+
+const insert_post_prepared_stmt = `INSERT INTO posts (
+    user_id, 
+    is_anonymous, 
+    visibility, 
+    created_at, 
+    content
+) VALUES (?, ?, ?, ?, ?)`;
 
 exports.addPost = async (req, res, next) => {
     try {
-        console.log(req.user);
-        console.log(req.body);
+        const timestamp = new Date();
 
-        const post_ = await post.create({
-            content: req.body.content,
-            postedBy: req.user._id,
-            timestamp: Date.now(),
-            lastReplyTimestamp: Date.now(),
-            isAnonymous: req.body.hideme,
-            visibility: req.body.visibility,
+        const [result] = await pool.query(insert_post_prepared_stmt, [
+            req.user.user_id,
+            req.body.hideme,
+            req.body.visibility,
+            timestamp,
+            req.body.content,
+        ]);
+
+        const [rows] = await pool.query(
+            "SELECT * FROM posts WHERE post_id = ?",
+            [result.insertId]
+        );
+
+        const post_ = rows[0];
+        console.log(rows);
+        console.log("at here");
+        console.log(post_);
+        res.json({
+            status: "SUCCESS",
+            code: "NONE",
+            data: post_,
+        });
+    } catch (err) {
+        res.json({
+            status: "ERROR",
+            code: "CATCH_ERROR",
+            data: {
+                message: err.message,
+            },
+        });
+    }
+};
+
+/*This query should me modified! [Post filtering algorithm]*/
+const get_posts_prepared_stmt = `SELECT * FROM posts LIMIT 10 OFFSET ?`;
+
+exports.getPosts = async (req, res, next) => {
+    try {
+        const offset = parseInt(req.query.from);
+
+        let [rows] = await pool.query(get_posts_prepared_stmt, [offset]);
+
+        rows.forEach((item) => {
+            item.comments = [];
         });
 
-        res.json(post_);
-    } catch (err) {
-        res.json(err);
-    }
-};
-
-exports.getAllPosts = async (req, res, next) => {
-    try {
-        console.log("new request");
-        const from = parseInt(req.query.from);
-        let post_ = await post.find();
-        const to = from + 5 > post_.length ? post_.length : from + 10;
-        console.log([from, to]);
         await new Promise((resolve) => setTimeout(resolve, 5000));
-        res.json(post_.slice(from, to));
-    } catch (error) {
-        res.json(error);
-    }
-};
 
-exports.getPostPage = async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const post_ = await post.findByIdAndUpdate(
-            id,
-            { $inc: { views: 1 } },
-            { new: true }
-        );
-
-        res.json(post_);
-    } catch (error) {
-        res.json(error);
-    }
-};
-
-exports.addToPostPage = async (req, res, next) => {
-    try {
-        const id = req.params.id;
-
-        let is_anon = false;
-        if (req.body.hideme) is_anon = true;
-
-        const post_ = await post.findByIdAndUpdate(
-            id,
-            {
-                $push: {
-                    replies: {
-                        content: req.body.content,
-                        postedBy: req.user._id,
-                        isAnonymous: is_anon,
-                        timestamp: Date.now(),
-                    },
-                },
-                $set: { lastReplyTimestamp: Date.now() },
-            },
-            { runValidators: true, new: true }
-        );
-
-        res.json(post_.replies);
+        res.json({
+            status: "SUCCESS",
+            code: "NONE",
+            data: rows,
+        });
     } catch (err) {
-        res.json(err);
+        res.json({
+            status: "ERROR",
+            code: "CATCH_ERROR",
+            data: {
+                message: err.message,
+            },
+        });
+    }
+};
+
+const insert_comment_prepared_stmt = `INSERT INTO comments (
+    post_id, 
+    user_id, 
+    created_at, 
+    content
+) VALUES (?, ?, ?, ?)`;
+
+exports.addComment = async (req, res, next) => {
+    try {
+        const timestamp = new Date();
+
+        console.log("add comment req");
+        console.log(
+            req.params.post_id,
+            req.user.user_id,
+            timestamp,
+            req.body.content
+        );
+
+        const [result] = await pool.query(insert_comment_prepared_stmt, [
+            req.params.post_id,
+            req.user.user_id,
+            timestamp,
+            req.body.content,
+        ]);
+
+        const [rows] = await pool.query(
+            `SELECT * FROM comments WHERE comment_id = ?`,
+            [result.insertId]
+        );
+
+        console.log(rows);
+
+        res.json({
+            status: "SUCCESS",
+            code: "NONE",
+            data: rows[0],
+        });
+    } catch (err) {
+        res.json({
+            status: "ERROR",
+            code: "CATCH_ERROR",
+            data: {
+                message: err.message,
+            },
+        });
+    }
+};
+
+const get_comments_prepared_stmt = `SELECT * FROM comments WHERE post_id = ? LIMIT 5 OFFSET ?`;
+
+exports.getComments = async (req, res, next) => {
+    try {
+        const post_id = parseInt(req.params.post_id);
+        const offset = parseInt(req.query.from);
+
+        let [rows] = await pool.query(get_comments_prepared_stmt, [
+            post_id,
+            offset,
+        ]);
+
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        res.json({
+            status: "SUCCESS",
+            code: "NONE",
+            data: rows,
+        });
+    } catch (err) {
+        res.json({
+            status: "ERROR",
+            code: "CATCH_ERROR",
+            data: {
+                message: err.message,
+            },
+        });
     }
 };

@@ -5,7 +5,7 @@ import pfetch from "../controllers/pfetch";
 import SmallSpinner from "./SmallSpinner";
 import { useNavigate } from "react-router-dom";
 
-export default function PostWall({ posts, setPosts }) {
+export default function PostWall({ posts, setPosts, toggleProfile }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -22,10 +22,11 @@ export default function PostWall({ posts, setPosts }) {
                 throw new Error("Request failed");
             }
 
-            const data = await res.json();
-            console.log("Response data:", data);
-            if (data.hasOwnProperty("auth")) return navigate("/signin");
-            setPosts([...posts, ...data]);
+            const response = await res.json();
+            console.log("Response data:", response);
+            if (response.data.hasOwnProperty("auth_fail"))
+                return navigate("/signin");
+            setPosts([...posts, ...response.data]);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
@@ -75,10 +76,11 @@ export default function PostWall({ posts, setPosts }) {
         <div className="grid place-items-center mt-20">
             {posts.map((item) => (
                 <PostText
-                    key={item._id}
+                    key={item.post_id}
                     postData={item}
                     posts={posts}
                     setPosts={setPosts}
+                    toggleProfile={toggleProfile}
                 />
             ))}
             {loading && <SmallSpinner />}

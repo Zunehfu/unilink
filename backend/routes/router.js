@@ -7,13 +7,13 @@ const router = express.Router();
 
 router
     .route("/posts")
-    .get(authController.protectRoute, postController.getAllPosts)
+    .get(authController.protectRoute, postController.getPosts)
     .post(authController.protectRoute, postController.addPost);
 
 router
-    .route("/posts/:id")
-    .get(authController.protectRoute, postController.getPostPage)
-    .post(authController.protectRoute, postController.addToPostPage);
+    .route("/posts/:post_id/comments")
+    .post(authController.protectRoute, postController.addComment)
+    .get(authController.protectRoute, postController.getComments);
 
 router.route("/signin").post(authController.verifySignin);
 
@@ -21,22 +21,12 @@ router.route("/signup").post(authController.verifySignup);
 
 router
     .route("/users")
-    .get(authController.protectRoute, userController.getAllUsers);
-
-router
-    .route("/users/:id")
-    .post(authController.protectRoute, userController.updateUserWithId)
     .get(authController.protectRoute, userController.getUserWithId);
-
-router
-    .route("/users/:id/friends")
-    .get(authController.protectRoute, userController.getFriendsWithId)
-    .post(authController.protectRoute, userController.addFriend);
 
 router.route("/validate").get(authController.validate);
 
 router
     .route("/betaresponse")
-    .get(authController.protectRoute, userController.betaresponse);
+    .post(authController.protectRoute, userController.betaresponse);
 
 module.exports = router;

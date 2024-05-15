@@ -10,7 +10,7 @@ export default function AddPostPage({
 }) {
     const [content, setContent] = useState("");
     const [hideme, setHideme] = useState(false);
-    const [option, setOption] = useState(0);
+    const [visibility, setVisibility] = useState(0);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -22,24 +22,25 @@ export default function AddPostPage({
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ content, hideme, option }),
+                body: JSON.stringify({ content, hideme, visibility }),
             });
 
             if (!res.ok) {
                 throw new Error("Request failed");
             }
 
-            const data = await res.json();
-            console.log("Response data:", data);
+            const response = await res.json();
+            console.log("Response data:", response);
 
-            if (data.hasOwnProperty("auth")) return navigate("/signin");
-            setPosts([data, ...posts]);
+            if (response.data.hasOwnProperty("auth"))
+                return navigate("/signin");
+            setPosts([...posts, response.data]);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
             setContent("");
             setHideme(false);
-            setOption(0);
+            setVisibility(0);
             setLoading(false);
         }
     }
@@ -75,16 +76,16 @@ export default function AddPostPage({
                     id="option1"
                     name="options"
                     value="0"
-                    checked={option === 0}
-                    onChange={() => !loading && setOption(0)}
+                    checked={visibility === 0}
+                    onChange={() => !loading && setVisibility(0)}
                 />
                 <label htmlFor="option1">Share with everyone</label> <br />
                 <input
                     type="radio"
                     id="option2"
                     name="options"
-                    checked={option === 1}
-                    onChange={() => !loading && setOption(1)}
+                    checked={visibility === 1}
+                    onChange={() => !loading && setVisibility(1)}
                 />
                 <label htmlFor="option2">
                     Share with others from your university
@@ -94,16 +95,16 @@ export default function AddPostPage({
                     type="radio"
                     id="option3"
                     name="options"
-                    checked={option === 2}
-                    onChange={() => !loading && setOption(2)}
+                    checked={visibility === 2}
+                    onChange={() => !loading && setVisibility(2)}
                 />
                 <label htmlFor="option3">Share with friends</label> <br />
                 <input
                     type="radio"
                     id="option4"
                     name="options"
-                    checked={option === 3}
-                    onChange={() => !loading && setOption(3)}
+                    checked={visibility === 3}
+                    onChange={() => !loading && setVisibility(3)}
                 />
                 <label htmlFor="option4">
                     Share with friends from your university

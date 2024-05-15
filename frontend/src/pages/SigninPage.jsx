@@ -26,10 +26,12 @@ export default function SigninPage() {
                 throw new Error("Request failed");
             }
 
-            const data = await res.json();
-            console.log("Response data:", data);
+            const response = await res.json();
+            console.log("Response data:", response);
 
-            Cookies.set("token", data.token, { expires: data.expires });
+            Cookies.set("token", response.data.token, {
+                expires: response.data.expires,
+            });
             navigate("/");
         } catch (err) {
             console.error("Fetch error:", err);

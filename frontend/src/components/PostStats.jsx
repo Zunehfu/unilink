@@ -3,32 +3,32 @@ import pfetch from "../controllers/pfetch";
 import { useNavigate } from "react-router-dom";
 
 export default function PostStats({
-    replies,
-    setReplies,
-    postId,
-    toggleReplyVisibility,
+    comments,
+    post_id,
+    toggleCommentsVisibility,
 }) {
+    console.log({ post_id });
     const [content, setContent] = useState("");
     const navigate = useNavigate();
 
     async function handleSubmission() {
         try {
-            const res = await pfetch("/posts/" + postId, {
+            const res = await pfetch("/posts/" + post_id + "/comments", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ content, hideme: false }),
+                body: JSON.stringify({ content }),
             });
 
             if (!res.ok) {
                 throw new Error("Request failed");
             }
 
-            const data = await res.json();
-            console.log("Response data:", data);
-            if (data.hasOwnProperty("auth")) return navigate("/signin");
-            setReplies(data);
+            const response = await res.json();
+            console.log("Response data:", response);
+            if (response.data.hasOwnProperty("auth_fail"))
+                return navigate("/signin");
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
@@ -40,9 +40,9 @@ export default function PostStats({
         <div className="h-9 flex justify-around items-center">
             <div>
                 <small>991</small> <i className="fa-regular fa-heart"></i> |{" "}
-                <small>{replies.length}</small>{" "}
+                <small>{comments.length}</small>{" "}
                 <i
-                    onClick={toggleReplyVisibility}
+                    onClick={toggleCommentsVisibility}
                     className="fa-regular fa-comment cursor-pointer"
                 ></i>
             </div>
