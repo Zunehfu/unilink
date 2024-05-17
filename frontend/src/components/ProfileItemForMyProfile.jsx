@@ -124,7 +124,7 @@ export default function ProfileItemForMyProfile({
                     backgroundColor:
                         editingField == field && !err ? "#bbf7d0" : "#fb7185",
                 }}
-                className="transition-all bg-gre"
+                className="transition-all"
             />
         </>
     );

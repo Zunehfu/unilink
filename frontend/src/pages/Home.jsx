@@ -7,6 +7,7 @@ import pfetch from "../controllers/pfetch";
 import Loader from "../components/Loader";
 import AddPostButton from "../components/AddPostButton";
 import TopLevelLayerProfile from "../components/TopLevelLayerProfile";
+import Search from "../components/Search";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -17,19 +18,24 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [userId_profile, setUserId_profile] = useState("myprofile");
     const [profileVisibility, setProfileVisibility] = useState(false);
+    const [searchVisibility, setSearchVisibility] = useState(false);
 
-    function toggleAddPostVisibility() {
+    const toggleAddPostVisibility = () => {
         setAddPostVisibility(!addPostVisibility);
-    }
+    };
 
-    function toggleProfile(visibility, id) {
+    const toggleSearchVisibility = () => {
+        setSearchVisibility(!searchVisibility);
+    };
+
+    const toggleProfile = (visibility, id) => {
         if (!visibility) return setProfileVisibility(false);
         setProfileVisibility(true);
         setUserId_profile(id);
-    }
+    };
 
     useEffect(() => {
-        async function checkValidity() {
+        const checkValidity = async () => {
             try {
                 const res = await pfetch("/validate", {
                     method: "GET",
@@ -53,7 +59,7 @@ export default function Home() {
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
         checkValidity();
     }, []);
@@ -64,7 +70,10 @@ export default function Home() {
                 <Loader />
             ) : (
                 <div>
-                    <Header toggleProfile={toggleProfile} />
+                    <Header
+                        toggleProfile={toggleProfile}
+                        toggleSearchVisibility={toggleSearchVisibility}
+                    />
                     <AddPostButton
                         toggleAddPostVisibility={toggleAddPostVisibility}
                     />
@@ -84,6 +93,12 @@ export default function Home() {
                         <TopLevelLayerProfile
                             toggleProfile={toggleProfile}
                             userId_profile={userId_profile}
+                        />
+                    )}
+                    {searchVisibility && (
+                        <Search
+                            toggleProfile={toggleProfile}
+                            toggleSearchVisibility={toggleSearchVisibility}
                         />
                     )}
                 </div>

@@ -8,6 +8,7 @@ export default function Profile({ toggleProfile, userId_profile }) {
     const [loading, setLoading] = useState(true);
     const [values, setValues] = useState({});
     const navigate = useNavigate();
+    const [palStatus, setPalStatus] = useState(0);
 
     useEffect(() => {
         async function fetchUser() {
@@ -28,6 +29,7 @@ export default function Profile({ toggleProfile, userId_profile }) {
                 if (response.data.hasOwnProperty("auth_fail"))
                     return navigate("/signin");
 
+                setPalStatus(response.data.pal_status);
                 setValues({
                     Username: response.data.username || "",
                     "Member since": response.data.created_at || "",
@@ -56,9 +58,147 @@ export default function Profile({ toggleProfile, userId_profile }) {
         fetchUser();
     }, []);
 
+    const handleSendPalProposal = async () => {
+        try {
+            const res = await pfetch(
+                "/palproposals?user_id=" + userId_profile,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!res.ok) {
+                throw new Error("Request failed");
+            }
+
+            const response = await res.json();
+            console.log("Response data:", response);
+            if (response.data.hasOwnProperty("auth_fail"))
+                return navigate("/signin");
+
+            setPalStatus(response.data.pal_status);
+        } catch (err) {
+            console.error("Fetch error:", err);
+        } finally {
+        }
+    };
+
+    const handleUnpal = async () => {
+        try {
+            const res = await pfetch("/pals?user_id=" + userId_profile, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Request failed");
+            }
+
+            const response = await res.json();
+            console.log("Response data:", response);
+            if (response.data.hasOwnProperty("auth_fail"))
+                return navigate("/signin");
+
+            setPalStatus(response.data.pal_status);
+        } catch (err) {
+            console.error("Fetch error:", err);
+        } finally {
+        }
+    };
+
+    const handleWithdrawPalProposal = async () => {
+        try {
+            const res = await pfetch(
+                "/palproposals?user_id=" + userId_profile,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!res.ok) {
+                throw new Error("Request failed");
+            }
+
+            const response = await res.json();
+            console.log("Response data:", response);
+            if (response.data.hasOwnProperty("auth_fail"))
+                return navigate("/signin");
+
+            setPalStatus(response.data.pal_status);
+        } catch (err) {
+            console.error("Fetch error:", err);
+        } finally {
+        }
+    };
+
+    const handleAcceptPalProposal = async () => {
+        try {
+            const res = await pfetch(
+                "/mypalproposals?accept=true&user_id=" + userId_profile,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!res.ok) {
+                throw new Error("Request failed");
+            }
+
+            const response = await res.json();
+            console.log("Response data:", response);
+            if (response.data.hasOwnProperty("auth_fail"))
+                return navigate("/signin");
+            console.log(response.data.pal_status);
+            setPalStatus(response.data.pal_status);
+        } catch (err) {
+            console.error("Fetch error:", err);
+        } finally {
+        }
+    };
+
+    const handleRejectPalProposal = async () => {
+        try {
+            const res = await pfetch(
+                "/mypalproposals?accept=false&user_id=" + userId_profile,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!res.ok) {
+                throw new Error("Request failed");
+            }
+
+            const response = await res.json();
+            console.log("Response data:", response);
+            if (response.data.hasOwnProperty("auth_fail"))
+                return navigate("/signin");
+
+            console.log(response.data.pal_status);
+            setPalStatus(response.data.pal_status);
+        } catch (err) {
+            console.error("Fetch error:", err);
+        } finally {
+        }
+    };
+
     return (
         <>
-            <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-10 backdrop-blur-sm ">
+            <div className="z-10 fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-10 backdrop-blur-sm ">
                 <div className="relative rounded-md h-[90vh] w-[90vw] max-w-[900px] bg-white overflow-y-scroll">
                     {loading ? (
                         <div className="h-full w-full flex items-center justify-center">
@@ -87,9 +227,46 @@ export default function Profile({ toggleProfile, userId_profile }) {
                                 {values["University"]} ]
                             </div>
                             <div className="mb-2 flex items-center justify-center">
-                                <button className="rounded-md bg-green-300 text-white py-1 px-3">
-                                    Be friends
-                                </button>
+                                {palStatus == 0 && (
+                                    <button
+                                        onClick={handleSendPalProposal}
+                                        className="rounded-md bg-green-300 text-white py-1 px-3"
+                                    >
+                                        Send pal proposal
+                                    </button>
+                                )}
+                                {palStatus == 1 && (
+                                    <button
+                                        onClick={handleUnpal}
+                                        className="rounded-md bg-green-300 text-white py-1 px-3"
+                                    >
+                                        Unpal
+                                    </button>
+                                )}
+                                {palStatus == 2 && (
+                                    <>
+                                        <button
+                                            onClick={handleAcceptPalProposal}
+                                            className="rounded-md bg-green-300 text-white py-1 px-3"
+                                        >
+                                            Accept
+                                        </button>
+                                        <button
+                                            onClick={handleRejectPalProposal}
+                                            className="rounded-md bg-green-300 text-white py-1 px-3"
+                                        >
+                                            Reject
+                                        </button>
+                                    </>
+                                )}
+                                {palStatus == 3 && (
+                                    <button
+                                        onClick={handleWithdrawPalProposal}
+                                        className="rounded-md bg-green-300 text-white py-1 px-3"
+                                    >
+                                        Withdraw pal proposal
+                                    </button>
+                                )}
                             </div>
 
                             <div className="flex justify-center">
