@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SmallSpinner from "./SmallSpinner";
-import pfetch from "../controllers/pfetch";
+import pfetch from "../utils/pfetch";
 import { useNavigate } from "react-router-dom";
 
 export default function AddPostPage({

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ProfileItemForMyProfile from "./ProfileItemForMyProfile";
 import { useNavigate } from "react-router-dom";
-import pfetch from "../controllers/pfetch";
+import pfetch from "../utils/pfetch";
 import { ThreeDots } from "react-loader-spinner";
+import svalues from "../utils/currentlySupportedValues";
+import { Toaster, toast } from "sonner";
 
 export default function MyProfile({ toggleProfile }) {
     const [loading, setLoading] = useState(true);
@@ -10,55 +12,54 @@ export default function MyProfile({ toggleProfile }) {
     const [values, setValues] = useState({});
     const navigate = useNavigate();
 
+    const handleProfilePictureEdit = () => {};
+
     useEffect(() => {
         async function fetchUser() {
             try {
-                const res = await pfetch("/users?id=myprofile", {
+                const data = await pfetch("/users?id=myprofile", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
                 });
 
-                if (!res.ok) {
-                    throw new Error("Request failed");
-                }
-
-                const response = await res.json();
-                console.log("Response data:", response);
-                if (response.data.hasOwnProperty("auth"))
-                    return navigate("/signin");
-
                 setValues({
-                    Username: response.data.username || "",
-                    "Member since": response.data.created_at || "",
-                    Name: response.data.name || "",
-                    Age: response.data.age || "",
-                    University: response.data.university || "",
-                    Major: response.data.major || "",
-                    Batch: response.data.batch || "",
-                    "Relationship status":
-                        response.data.relationship_status || "",
-                    Gender: response.data.gender || "",
-                    "Contact No": response.data.contact || "",
-                    "Uni email": response.data.email || "",
-                    "Personal email": response.data.personal_email || "",
-                    "Personal website": response.data.website || "",
-                    "Interested in": response.data.interested_in || "",
-                    "Date of birth": response.data.birth_date || "",
+                    Username: data.username || "",
+                    "Member since": data.created_at || "",
+                    Name: data.name || "",
+                    Age: data.age || "",
+                    University: data.university || "",
+                    Major: data.major || "",
+                    Batch: data.batch || "",
+                    "Relationship status": data.relationship_status || "",
+                    Gender: data.gender || "",
+                    "Contact No": data.contact || "",
+                    "Uni email": data.email || "",
+                    "Personal email": data.personal_email || "",
+                    "Personal website": data.website || "",
+                    "Interested in": data.interested_in || "",
+                    "Date of birth": data.birth_date || "",
                 });
             } catch (err) {
                 console.error("Fetch error:", err);
+                if (err.code === "AUTH_FAIL") return navigate("/signin");
             } finally {
                 setLoading(false);
             }
         }
 
         fetchUser();
+        toast.info(
+            "You can adjust what details to display or not in settings under 'privacy'"
+        );
     }, []);
+
+    // const handleProfilePictureEdit = () => {};
 
     return (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-10 backdrop-blur-sm ">
+            <Toaster position="bottom-center" richColors />
             <div className="relative rounded-md h-[90vh] w-[90vw] max-w-[900px] bg-white overflow-y-scroll">
                 {loading ? (
                     <div className="h-full w-full flex items-center justify-center">
@@ -75,13 +76,13 @@ export default function MyProfile({ toggleProfile }) {
                     </div>
                 ) : (
                     <>
-                        <div className="absolute top-28 h-20 w-full bg-green-950 shadow-md hidden sm:block">
+                        {/* <div className="absolute top-28 h-20 w-full bg-green-950 shadow-md hidden sm:block">
                             <div className=" absolute left-[calc(50%+92px)] right-0 flex justify-center h-full items-center text-4xl">
                                 <div className="absolute w-fit h-fit text-white tracking-[10px] font-bold">
                                     MORA
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <i
                             onClick={() => toggleProfile(false, "myprofile")}
                             className="fa-solid fa-xmark relative left-1.5 top-0 cursor-pointer transition-all hover:scale-150"
@@ -92,8 +93,19 @@ export default function MyProfile({ toggleProfile }) {
                         </div>
 
                         <div className="flex justify-center">
-                            <div className="relative z-10 w-48 h-48 border-2 border-white rounded-full overflow-hidden">
-                                <img src="../../public/profile.jpg" alt="img" />
+                            <div className="relative">
+                                <div className="w-48 h-48 border-2 border-white rounded-full overflow-hidden">
+                                    <img
+                                        src="../../public/profile.jpg"
+                                        alt="img"
+                                    />
+                                </div>
+                                <div
+                                    onClick={handleProfilePictureEdit}
+                                    className="bg-green-100 hover:bg-white hover:border-2 hover:border-green-500 transition-all cursor-pointer rounded-full h-10 w-10 flex justify-center items-center absolute right-1 bottom-4"
+                                >
+                                    <i className="fa-solid fa-pen"></i>
+                                </div>
                             </div>
                         </div>
 
@@ -138,7 +150,7 @@ export default function MyProfile({ toggleProfile }) {
                                     field="Age"
                                     values={values}
                                     setValues={setValues}
-                                    editable={true}
+                                    editable={false}
                                 />
 
                                 <ProfileItemForMyProfile
@@ -156,6 +168,7 @@ export default function MyProfile({ toggleProfile }) {
                                     values={values}
                                     setValues={setValues}
                                     editable={true}
+                                    items={svalues.major_l}
                                 />
                                 <ProfileItemForMyProfile
                                     editingField={editingField}
@@ -172,6 +185,7 @@ export default function MyProfile({ toggleProfile }) {
                                     values={values}
                                     setValues={setValues}
                                     editable={true}
+                                    items={svalues.relationship_status_l}
                                 />
                                 <ProfileItemForMyProfile
                                     editingField={editingField}
@@ -180,6 +194,7 @@ export default function MyProfile({ toggleProfile }) {
                                     values={values}
                                     setValues={setValues}
                                     editable={true}
+                                    items={svalues.gender_l}
                                 />
                             </div>
 
@@ -226,6 +241,7 @@ export default function MyProfile({ toggleProfile }) {
                                     values={values}
                                     setValues={setValues}
                                     editable={true}
+                                    items={svalues.interested_in_l}
                                 />
                                 <ProfileItemForMyProfile
                                     editingField={editingField}

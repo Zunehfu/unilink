@@ -3,7 +3,7 @@ import PostStats from "./PostStats";
 import PostContent from "./PostContent";
 import Comments from "./Comments";
 import { useEffect, useState } from "react";
-import pfetch from "../controllers/pfetch";
+import pfetch from "../utils/pfetch";
 import { Bars } from "react-loader-spinner";
 
 export default function PostText({ postData, toggleProfile }) {

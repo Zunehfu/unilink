@@ -1,64 +1,42 @@
 const pool = require("../database");
 const moment = require("moment");
 const response = require("../utilities/response");
-
-const get_user_prepared_stmt__user_id = `SELECT * FROM users WHERE user_id = ? LIMIT 1`;
+const Err = require("../utilities/customErr");
+const svalues = require("../utilities/currentlySupportedValues");
 
 exports.getUserWithId = async (req, res, next) => {
+    let conn;
     try {
-        console.log(req.query);
         // await new Promise((resolve) => setTimeout(resolve, 5000));
         let pal_status = 0;
-
+        conn = await pool.getConnection();
         const user_id =
             req.query.id == "myprofile" ? req.user.user_id : req.query.user_id;
-
-        const [rows_q1] = await pool.query(get_user_prepared_stmt__user_id, [
-            user_id,
-        ]);
-
-        const [rows_q3] = await pool.query(
+        const [rows_q1] = await conn.query(
+            `SELECT * FROM users WHERE user_id = ? LIMIT 1`,
+            [user_id]
+        );
+        const user_ = rows_q1[0];
+        if (!user_)
+            throw new Err("INVALID_USER_ID", "This person doesn't exist!");
+        const [rows_q3] = await conn.query(
             `SELECT EXISTS(SELECT 1 FROM pals WHERE (user_id_from = ? AND user_id_to = ?) OR (user_id_from = ? AND user_id_to = ?) LIMIT 1) AS pals_`,
             [req.user.user_id, user_id, user_id, req.user.user_id]
         );
-
-        console.log({ rows_q3 });
-
         if (rows_q3[0].pals_) pal_status = 1;
-
-        if (pal_status == 0) {
-            const [rows_q2] = await pool.query(
+        if (!pal_status) {
+            const [rows_q2] = await conn.query(
                 `SELECT user_id_from, user_id_to FROM pal_proposals WHERE (user_id_from = ? AND user_id_to = ?) OR (user_id_from = ? AND user_id_to = ?) LIMIT 1;`,
                 [req.user.user_id, user_id, user_id, req.user.user_id]
             );
-
             if (0 < rows_q2.length) {
                 if (rows_q2[0].user_id_from == req.user.user_id) pal_status = 3;
                 else pal_status = 2;
             }
-
-            console.log({ rows_q2 });
         }
 
-        const user_ = rows_q1[0];
-
-        if (!user_)
-            return res.json({
-                status: "ERROR",
-                code: "INVALID_USER_ID",
-                data: {
-                    message: "This person doesn't exist",
-                },
-            });
-
-        // user_.lastOnline_formatted = moment(user_.lastOnline).format(
-        //     "YYYY-MM-DD hh:mm A"
-        // );
-
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: {
+        res.json(
+            response(true, "NONE", {
                 name: user_.name,
                 created_at: moment(user_.created_at).format("YYYY-MM-DD"),
                 age: user_.age,
@@ -75,18 +53,32 @@ exports.getUserWithId = async (req, res, next) => {
                 interested_in: user_.interested_in,
                 birth_date: user_.birth_date,
                 pal_status,
-            },
-        });
+            })
+        );
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        res.json(
+            response(
+                false,
+                err.code ? err.code : "UNEXPECTED_ERROR",
+                err.message
+            )
+        );
+    } finally {
+        if (conn) conn.release();
     }
 };
+
+const urlPattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol (optional)
+        "((([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,})|" + // domain name and extension
+        "localhost|" + // localhost
+        "\\d{1,3}\\.?\\d{1,3}\\.?\\d{1,3}\\.?\\d{1,3}|" + // OR IP (v4) address
+        "\\[?[a-fA-F0-9:]+\\]?)" + // OR IP (v6) address
+        "(\\:\\d+)?(\\/[-a-zA-Z0-9@:%._\\+~#=]*)*" + // port and path (optional)
+        "(\\?[;&a-zA-Z0-9%_\\+=\\-]*)?" + // query string (optional)
+        "(\\#[-a-zA-Z0-9_]*)?$", // fragment locator (optional)
+    "i" // case-insensitive
+);
 
 exports.betaresponse = async (req, res, next) => {
     try {
@@ -94,72 +86,124 @@ exports.betaresponse = async (req, res, next) => {
         console.log(req.body);
 
         let sql = "";
-
+        let age_;
         const field = req.body.field;
+        let value = req.body.value;
+        value = value.trim();
+        const lvalue = value.toLowerCase();
 
         if (field === "Username") {
-            sql = "UPDATE users SET username = ? WHERE user_id = ?";
+            const [user_check] = await pool.query(
+                `SELECT EXISTS(SELECT 1 FROM users WHERE username = ? LIMIT 1) AS is_valid`,
+                [value]
+            );
+
+            if (user_check[0].is_valid) {
+                throw new Err(
+                    "INVALID_VALUE",
+                    "This username is not available"
+                );
+            }
+
+            sql = "UPDATE users SET username = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Name") {
-            sql = "UPDATE users SET name = ? WHERE user_id = ?";
-        } else if (field === "Age") {
-            sql = "UPDATE users SET age = ? WHERE user_id = ?";
+            if (value.length < 3 || value.length > 64) {
+                throw new Err(
+                    "INVALID_VALUE",
+                    "Please enter a name in between 3 - 64 characters"
+                );
+            }
+            sql = "UPDATE users SET name = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Major") {
-            sql = "UPDATE users SET major = ? WHERE user_id = ?";
+            value = svalues.major_l.find((val) => val.toLowerCase() === lvalue);
+            if (!value) {
+                throw new Err("INVALID_VALUE", "This major is not acceptable");
+            }
+            sql = "UPDATE users SET major = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Batch") {
-            sql = "UPDATE users SET batch = ? WHERE user_id = ?";
+            if (!/^(201[5-9]|202[0-4])$/.test(value)) {
+                throw new Err("INVALID_VALUE", "This batch is not acceptable");
+            }
+
+            sql = "UPDATE users SET batch = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Relationship status") {
-            sql = "UPDATE users SET relationship_status = ? WHERE user_id = ?";
+            value = svalues.relationship_status_l.find(
+                (val) => val.toLowerCase() === lvalue
+            );
+            if (!value) value = null;
+            sql =
+                "UPDATE users SET relationship_status = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Gender") {
-            sql = "UPDATE users SET gender = ? WHERE user_id = ?";
+            value = svalues.gender_l.find(
+                (val) => val.toLowerCase() === lvalue
+            );
+            if (!value) value = null;
+            sql = "UPDATE users SET gender = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Contact No") {
-            sql = "UPDATE users SET contact = ? WHERE user_id = ?";
+            if (!/^\+?[0-9]{10,15}$/.test(value)) {
+                throw new Err(
+                    "INVALID_VALUE",
+                    "This contact number seems a bit off"
+                );
+            }
+            sql = "UPDATE users SET contact = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Personal email") {
-            sql = "UPDATE users SET personal_email = ? WHERE user_id = ?";
+            if (
+                !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+            ) {
+                throw new Err("INVALID_VALUE", "This email seems a bit off");
+            }
+            sql =
+                "UPDATE users SET personal_email = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Personal website") {
-            sql = "UPDATE users SET website = ? WHERE user_id = ?";
+            if (!urlPattern.test(value)) {
+                throw new Err("INVALID_VALUE", "This is not a valid url");
+            }
+            sql = "UPDATE users SET website = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Interested in") {
-            sql = "UPDATE users SET interested_in = ? WHERE user_id = ?";
+            value = svalues.interested_in_l.find(
+                (val) => val.toLowerCase() === lvalue
+            );
+            if (!value) value = null;
+            sql =
+                "UPDATE users SET interested_in = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Date of birth") {
-            sql = "UPDATE users SET birth_date = ? WHERE user_id = ?";
+            if (
+                !/^(?:(?!0000)\d{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$/.test(
+                    value
+                )
+            ) {
+                throw new Err("INVALID_VALUE", "This date is not valid");
+            }
+            age_ =
+                parseInt(new Date().getFullYear()) -
+                parseInt(value.substring(0, 4));
+            pool.query("UPDATE users SET age = ? WHERE user_id = ? LIMIT 1", [
+                age_,
+                req.user.user_id,
+            ]);
+            sql = "UPDATE users SET birth_date = ? WHERE user_id = ? LIMIT 1";
         } else {
-            return res.json({
-                status: "ERROR",
-                code: "INVALID_PROFILE_FIELD",
-                data: {
-                    message: "Cannot be updated at the moment!",
-                },
-            });
+            throw new Err(
+                "INVALID_PROFILE_FIELD",
+                "Cannot be updated at the moment"
+            );
         }
 
-        console.log(sql);
+        const [results] = await pool.query(sql, [value, req.user.user_id]);
 
-        const [results] = await pool.query(sql, [
-            req.body.value,
-            req.user.user_id,
-        ]);
-        console.log(results);
-
-        if (results.changedRows != 1) {
-            return res.json({
-                status: "ERROR",
-                code: "DATABASE_UPDATE_FAILED",
-                data: { message: "Something went wrong!" },
-            });
+        if (!results.affectedRows) {
+            throw new Err("DATABASE_UPDATE_FAILED", "Something went wrong");
         }
 
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: { message: "Profile updated successfully!" },
-        });
+        res.json(
+            response(true, "NONE", {
+                message: "Profile updated successfully",
+                age_: age_ ? age_ : null,
+            })
+        );
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        res.json(response(false, err.code || "UNEXPECTED_ERROR", err.message));
     }
 };
 

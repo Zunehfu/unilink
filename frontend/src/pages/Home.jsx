@@ -3,7 +3,7 @@ import PostWall from "../components/PostWall";
 import AddPostPage from "../components/AddPostPage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import pfetch from "../controllers/pfetch";
+import pfetch from "../utils/pfetch";
 import Loader from "../components/Loader";
 import AddPostButton from "../components/AddPostButton";
 import TopLevelLayerProfile from "../components/TopLevelLayerProfile";
@@ -37,25 +37,14 @@ export default function Home() {
     useEffect(() => {
         const checkValidity = async () => {
             try {
-                const res = await pfetch("/validate", {
+                await pfetch("/validate", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
                 });
-
-                if (!res.ok) {
-                    throw new Error("Request failed");
-                }
-
-                const response = await res.json();
-                if (
-                    response.status == "ERROR" &&
-                    response.data.auth_fail == true
-                )
-                    return navigate("/signin");
             } catch (err) {
-                console.error("Fetch error:", err);
+                if (err.code === "AUTH_FAIL") return navigate("/signin");
             } finally {
                 setLoading(false);
             }

@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors());
 
 // const queryFunction = async () => {
 //     console.log("queryFunction initialize...");
@@ -34,3 +34,6 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use("/", require("./routes/router"));
 
 app.listen(port, () => console.log(`Server is running on ${port}!`));
+// app.listen(port, "0.0.0.0", () => {
+//     console.log(`Server is running on http://0.0.0.0:${port}`);
+// });

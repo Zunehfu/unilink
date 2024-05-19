@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Logo from "../components/Logo";
-import pfetch from "../controllers/pfetch";
+import pfetch from "../utils/pfetch";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ export default function SigninPage() {
 
     async function handleSignin() {
         try {
-            const res = await pfetch("/signin", {
+            const data = await pfetch("/signin", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -22,19 +22,12 @@ export default function SigninPage() {
                 }),
             });
 
-            if (!res.ok) {
-                throw new Error("Request failed");
-            }
-
-            const response = await res.json();
-            console.log("Response data:", response);
-
-            Cookies.set("token", response.data.token, {
-                expires: response.data.expires,
+            Cookies.set("token", data.token, {
+                expires: data.expires,
             });
             navigate("/");
         } catch (err) {
-            console.error("Fetch error:", err);
+            console.error(err);
         }
     }
 

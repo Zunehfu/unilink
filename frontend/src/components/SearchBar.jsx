@@ -1,6 +1,6 @@
 import anime from "animejs";
 import { useEffect, useState } from "react";
-import pfetch from "../controllers/pfetch";
+import pfetch from "../utils/pfetch";
 import { Bars } from "react-loader-spinner";
 
 export default function SearchBar({ setSearchResults }) {
@@ -11,26 +11,16 @@ export default function SearchBar({ setSearchResults }) {
     useEffect(() => {
         const fetchResutls = async () => {
             try {
-                const res = await pfetch("/search?q=" + searchTerm, {
+                const data = await pfetch("/search?q=" + searchTerm, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
                 });
 
-                if (!res.ok) {
-                    throw new Error("Request failed");
-                }
-
-                const response = await res.json();
-                if (
-                    response.status == "ERROR" &&
-                    response.data.auth_fail == true
-                )
-                    return navigate("/signin");
-                setSearchResults(response.data);
+                setSearchResults(data);
             } catch (err) {
-                console.error("Fetch error:", err);
+                if (err.code == "AUTH_FAIL") return navigate("/signin");
             } finally {
                 setSearching(false);
             }

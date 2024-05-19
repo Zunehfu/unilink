@@ -50,6 +50,7 @@ const get_posts_prepared_stmt = `SELECT * FROM posts LIMIT 10 OFFSET ?`;
 
 exports.getPosts = async (req, res, next) => {
     try {
+        console.log("Get Posts");
         const offset = parseInt(req.query.from);
 
         let [rows] = await pool.query(get_posts_prepared_stmt, [offset]);
