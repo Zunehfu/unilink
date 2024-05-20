@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SmallSpinner from "./SmallSpinner";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import { useNavigate } from "react-router-dom";
 
 export default function AddPostPage({
@@ -8,6 +8,7 @@ export default function AddPostPage({
     setPosts,
     posts,
 }) {
+    const pfetch = usePfetch();
     const [content, setContent] = useState("");
     const [hideme, setHideme] = useState(false);
     const [visibility, setVisibility] = useState(0);

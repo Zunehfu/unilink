@@ -1,9 +1,8 @@
-export default function SearchResultCard({
-    item,
-    toggleProfile,
-    roundTop,
-    roundBottom,
-}) {
+import { useContext } from "react";
+import { toggleProfile_c } from "../contexts/ProfileContext";
+
+export default function SearchResultCard({ item, roundTop, roundBottom }) {
+    const { setUserId_profile } = useContext(toggleProfile_c);
     return (
         <>
             <div
@@ -13,7 +12,7 @@ export default function SearchResultCard({
                     borderBottomLeftRadius: roundBottom ? "16px" : "0px",
                     borderBottomRightRadius: roundBottom ? "16px" : "0px",
                 }}
-                onClick={() => toggleProfile(true, item.user_id)}
+                onClick={() => setUserId_profile(item.user_id)}
                 className="bg-white h-12 flex hover:bg-green-100 cursor-pointer"
             >
                 <div className="ml-1 w-12 flex justify-center items-center">

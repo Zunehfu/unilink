@@ -38,6 +38,7 @@ const validate = async (req, res, next) => {
             code: "NONE",
             data: {
                 auth_fail: false,
+                user_id: user_.user_id,
             },
         });
     } catch (error) {
@@ -54,6 +55,7 @@ const validate = async (req, res, next) => {
 const protectRoute = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
+        const client_uid = parseInt(req.headers["client-uid"]);
 
         if (!token)
             return res.json({
@@ -76,6 +78,15 @@ const protectRoute = async (req, res, next) => {
             return res.json({
                 status: "ERROR",
                 code: "JWT_MALFORMED",
+                data: {
+                    auth_fail: true,
+                },
+            });
+
+        if (!(user_.user_id === client_uid))
+            return res.json({
+                status: "ERROR",
+                code: "CLIENT_ID_MISMATCH",
                 data: {
                     auth_fail: true,
                 },

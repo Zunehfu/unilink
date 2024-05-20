@@ -3,10 +3,11 @@ import PostStats from "./PostStats";
 import PostContent from "./PostContent";
 import Comments from "./Comments";
 import { useEffect, useState } from "react";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import { Bars } from "react-loader-spinner";
 
-export default function PostText({ postData, toggleProfile }) {
+export default function PostText({ postData }) {
+    const pfetch = usePfetch();
     const [comments, setComments] = useState([]);
     const [loadingComments, setLoadingComments] = useState(false);
     const [commentsVisibility, setCommentsVisibility] = useState(false);
@@ -53,7 +54,6 @@ export default function PostText({ postData, toggleProfile }) {
                 <PostDetails
                     user_id={postData.user_id}
                     created_at={postData.created_at}
-                    toggleProfile={toggleProfile}
                 />
                 <PostStats
                     post_id={postData.post_id}

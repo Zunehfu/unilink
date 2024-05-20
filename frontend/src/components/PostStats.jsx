@@ -1,5 +1,5 @@
 import { useState } from "react";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import { useNavigate } from "react-router-dom";
 
 export default function PostStats({
@@ -7,6 +7,7 @@ export default function PostStats({
     post_id,
     toggleCommentsVisibility,
 }) {
+    const pfetch = usePfetch();
     const [content, setContent] = useState("");
     const navigate = useNavigate();
 

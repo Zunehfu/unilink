@@ -3,7 +3,7 @@ import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
 import { Toaster, toast } from "sonner";
 
-export default function Search({ toggleProfile, toggleSearchVisibility }) {
+export default function Search({ toggleSearchVisibility }) {
     useEffect(() => {
         toast.info(
             "Only the top 10 results are displayed. Click the search icon to see all results."
@@ -17,10 +17,7 @@ export default function Search({ toggleProfile, toggleSearchVisibility }) {
                 className="text-white hover:text-green-300 cursor-pointer fa-solid fa-arrow-left absolute left-3 top-3 scale-150"
             ></i>
             <SearchBar setSearchResults={setSearchResults} />
-            <SearchResults
-                searchResults={searchResults}
-                toggleProfile={toggleProfile}
-            />
+            <SearchResults searchResults={searchResults} />
             <Toaster position="bottom-center" richColors />
         </div>
     );

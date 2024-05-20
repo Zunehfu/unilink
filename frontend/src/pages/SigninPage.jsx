@@ -1,10 +1,11 @@
 import { useState } from "react";
 import Logo from "../components/Logo";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 export default function SigninPage() {
+    const pfetch = usePfetch();
     const [username, setUsername] = useState("");
     const [pass, setPass] = useState("");
     const navigate = useNavigate();

@@ -1,9 +1,10 @@
 import anime from "animejs";
 import { useEffect, useState } from "react";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import { Bars } from "react-loader-spinner";
 
 export default function SearchBar({ setSearchResults }) {
+    const pfetch = usePfetch();
     const [searchTerm, setSearchTerm] = useState("");
     const [prevTerm, setPrevTerm] = useState("");
     const [searching, setSearching] = useState(false);

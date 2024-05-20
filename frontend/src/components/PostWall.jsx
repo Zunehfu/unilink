@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import PostText from "./PostText";
 import { useState } from "react";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import SmallSpinner from "./SmallSpinner";
 import { useNavigate } from "react-router-dom";
 
-export default function PostWall({ posts, setPosts, toggleProfile }) {
+export default function PostWall({ posts, setPosts }) {
+    const pfetch = usePfetch();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -64,7 +65,6 @@ export default function PostWall({ posts, setPosts, toggleProfile }) {
                     postData={item}
                     posts={posts}
                     setPosts={setPosts}
-                    toggleProfile={toggleProfile}
                 />
             ))}
             {loading && <SmallSpinner />}

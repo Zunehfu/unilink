@@ -5,6 +5,7 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import router from "./routes/router.js";
+// import socketController from "./controllers/socketController.js";
 
 const port = 8080;
 
@@ -17,8 +18,10 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
+    console.log("connected");
     console.log(socket.id);
     socket.on("disconnect", () => {
+        console.log("disconnected");
         console.log(socket.id);
     });
 });

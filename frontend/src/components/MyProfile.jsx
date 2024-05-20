@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import ProfileItemForMyProfile from "./ProfileItemForMyProfile";
 import { useNavigate } from "react-router-dom";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import { ThreeDots } from "react-loader-spinner";
 import svalues from "../utils/currentlySupportedValues";
 import { Toaster, toast } from "sonner";
+import { toggleProfile_c } from "../contexts/ProfileContext";
 
-export default function MyProfile({ toggleProfile }) {
+export default function MyProfile() {
+    const pfetch = usePfetch();
+    const { setUserId_profile } = useContext(toggleProfile_c);
+
     const [loading, setLoading] = useState(true);
     const [editingField, setEditingField] = useState("");
     const [values, setValues] = useState({});
@@ -84,7 +88,7 @@ export default function MyProfile({ toggleProfile }) {
                             </div>
                         </div> */}
                         <i
-                            onClick={() => toggleProfile(false, "myprofile")}
+                            onClick={() => setUserId_profile(-1)}
                             className="fa-solid fa-xmark relative left-1.5 top-0 cursor-pointer transition-all hover:scale-150"
                         ></i>
 

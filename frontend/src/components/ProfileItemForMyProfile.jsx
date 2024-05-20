@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Bars } from "react-loader-spinner";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import userDataErrorHandler from "../utils/userDataErrorHandler";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import DropMenuForMyProfile from "./DropMenuForMyProfile";
 
 function searchList(list, searchTerm) {
+    const pfetch = usePfetch();
     const normalizedSearchTerm = searchTerm.toLowerCase().replace(/%/g, "");
     const calculateScore = (item, searchTerm) => {
         const normalizedItem = item.toLowerCase();

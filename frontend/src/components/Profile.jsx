@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProfileItemForProfile from "./ProfileItemForProfile";
-import pfetch from "../utils/pfetch";
+import { usePfetch } from "../hooks/usePfetch";
 import { ThreeDots } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
-import "../../public/shiny.css";
+import "../styles/profile-uni.css";
+import { toggleProfile_c } from "../contexts/ProfileContext";
 
-export default function Profile({ toggleProfile, userId_profile }) {
+export default function Profile() {
+    const pfetch = usePfetch();
+    const { setUserId_profile, userId_profile } = useContext(toggleProfile_c);
     const [loading, setLoading] = useState(true);
     const [values, setValues] = useState({});
     const navigate = useNavigate();
@@ -158,9 +161,7 @@ export default function Profile({ toggleProfile, userId_profile }) {
                     ) : (
                         <>
                             <i
-                                onClick={() =>
-                                    toggleProfile(false, "myprofile")
-                                }
+                                onClick={() => setUserId_profile(-1)}
                                 className="fa-solid fa-xmark relative left-1.5 top-0 cursor-pointer transition-all hover:scale-150"
                             ></i>
 
