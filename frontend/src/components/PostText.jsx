@@ -17,7 +17,7 @@ export default function PostText({ postData, toggleProfile }) {
 
     async function fetchComments() {
         try {
-            const res = await pfetch(
+            const data = await pfetch(
                 "/posts/" +
                     postData.post_id +
                     "/comments?from=" +
@@ -30,19 +30,9 @@ export default function PostText({ postData, toggleProfile }) {
                 }
             );
 
-            if (!res.ok) {
-                throw new Error("Request failed");
-            }
-
-            const response = await res.json();
-            console.log("Response data:", response);
-
-            if (response.data.hasOwnProperty("auth_fail"))
-                return navigate("/signin");
-
-            setComments([...comments, ...response.data]);
+            setComments([...comments, ...data]);
         } catch (err) {
-            console.error("Fetch error:", err);
+            if (err.code == "AUTH_FAIL") return navigate("/signin");
         } finally {
             setLoadingComments(false);
         }

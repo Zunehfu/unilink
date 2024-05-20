@@ -23,7 +23,7 @@ export default function PostWall({ posts, setPosts, toggleProfile }) {
 
             setPosts([...posts, ...data]);
         } catch (err) {
-            console.error(err);
+            if (err.code == "AUTH_FAIL") return navigate("/signin");
         } finally {
             setLoading(false);
         }

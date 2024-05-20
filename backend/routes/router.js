@@ -1,7 +1,7 @@
-const express = require("express");
-const authController = require("../controllers/authController");
-const postController = require("../controllers/postController");
-const userController = require("../controllers/userController");
+import express from "express";
+import authController from "../controllers/authController.js";
+import postController from "../controllers/postController.js";
+import userController from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -47,4 +47,4 @@ router
     .route("/betaresponse")
     .post(authController.protectRoute, userController.betaresponse);
 
-module.exports = router;
+export default router;

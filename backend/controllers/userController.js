@@ -1,10 +1,10 @@
-const pool = require("../database");
-const moment = require("moment");
-const response = require("../utilities/response");
-const Err = require("../utilities/customErr");
-const svalues = require("../utilities/currentlySupportedValues");
+import pool from "../utils/database.js";
+import moment from "moment";
+import response from "../utils/response.js";
+import Err from "../utils/customErr.js";
+import svalues from "../utils/currentlySupportedValues.js";
 
-exports.getUserWithId = async (req, res, next) => {
+const getUserWithId = async (req, res, next) => {
     let conn;
     try {
         // await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -80,7 +80,7 @@ const urlPattern = new RegExp(
     "i" // case-insensitive
 );
 
-exports.betaresponse = async (req, res, next) => {
+const betaresponse = async (req, res, next) => {
     try {
         console.log("betaresponse req recieved!");
         console.log(req.body);
@@ -214,7 +214,7 @@ const get_likeusers_prepared_stmt = `
            OR Name LIKE ?
         LIMIT 10;`;
 
-exports.getLikeUsers = async (req, res, next) => {
+const getLikeUsers = async (req, res, next) => {
     try {
         // await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -250,7 +250,7 @@ const insert_palproposal_prepared_stmt = `INSERT INTO pal_proposals (
     user_id_to 
 ) VALUES (?, ?)`;
 
-exports.sendPalProposal = async (req, res, next) => {
+const sendPalProposal = async (req, res, next) => {
     try {
         await pool.query(insert_palproposal_prepared_stmt, [
             req.user.user_id,
@@ -272,7 +272,7 @@ exports.sendPalProposal = async (req, res, next) => {
     }
 };
 
-exports.removePalProposal = async (req, res, next) => {
+const removePalProposal = async (req, res, next) => {
     try {
         await pool.query(
             `DELETE FROM pal_proposals WHERE user_id_from = ? AND user_id_to = ?;`,
@@ -294,7 +294,7 @@ exports.removePalProposal = async (req, res, next) => {
     }
 };
 
-exports.removeMyPalProposal = async (req, res, next) => {
+const removeMyPalProposal = async (req, res, next) => {
     let conn;
     try {
         conn = await pool.getConnection();
@@ -338,7 +338,7 @@ exports.removeMyPalProposal = async (req, res, next) => {
     }
 };
 
-exports.removePal = async (req, res, next) => {
+const removePal = async (req, res, next) => {
     try {
         await pool.query(
             `DELETE FROM pals 
@@ -376,7 +376,7 @@ WHERE p.user_id_to = ?
 LIMIT 20
 OFFSET ?`;
 
-exports.getMyPalProposals = async (req, res, next) => {
+const getMyPalProposals = async (req, res, next) => {
     try {
         const [rows] = await pool.query(get_palproposals_prepared_stmt, [
             req.user.user_id,
@@ -399,7 +399,7 @@ exports.getMyPalProposals = async (req, res, next) => {
 // LIMIT 20
 // OFFSET ?`;
 
-// exports.getPals = async (req, res, next) => {
+// const getPals = async (req, res, next) => {
 //     try {
 //         const [rows] = await pool.query(get_palproposals_prepared_stmt, [
 //             req.user.user_id,
@@ -414,3 +414,14 @@ exports.getMyPalProposals = async (req, res, next) => {
 //         );
 //     }
 // };
+
+export default {
+    getUserWithId,
+    sendPalProposal,
+    removePalProposal,
+    removeMyPalProposal,
+    getMyPalProposals,
+    removePal,
+    getLikeUsers,
+    betaresponse,
+};

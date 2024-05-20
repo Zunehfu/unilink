@@ -1,39 +1,34 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-
+import express from "express";
 const app = express();
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import router from "./routes/router.js";
+
 const port = 8080;
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    },
+});
+
+io.on("connection", (socket) => {
+    console.log(socket.id);
+    socket.on("disconnect", () => {
+        console.log(socket.id);
+    });
+});
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cors());
+app.use("/", router);
 
-// const queryFunction = async () => {
-//     console.log("queryFunction initialize...");
-//     try {
-//         const sql = `SELECT * FROM users `;
-
-//         const [rows] = await pool.query(sql);
-//         const user_ = rows;
-//         console.log(user_);
-//         if (user_) console.log("user_");
-//         if (!user_) console.log("!user_");
-//     } catch (err) {
-//         console.log({ err });
-//         if (err.code == "ER_DUP_ENTRY") {
-//             console.log("There is a duplicate key error!");
-//         }
-//     }
-// };
-
-// queryFunction();
-
-app.use("/", require("./routes/router"));
-
-app.listen(port, () => console.log(`Server is running on ${port}!`));
-// app.listen(port, "0.0.0.0", () => {
-//     console.log(`Server is running on http://0.0.0.0:${port}`);
-// });
+httpServer.listen(port, () => {
+    console.log(`Server is running on ${port}!`);
+});

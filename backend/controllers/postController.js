@@ -1,4 +1,4 @@
-const pool = require("../database");
+import pool from "../utils/database.js";
 
 const insert_post_prepared_stmt = `INSERT INTO posts (
     user_id, 
@@ -8,7 +8,7 @@ const insert_post_prepared_stmt = `INSERT INTO posts (
     content
 ) VALUES (?, ?, ?, ?, ?)`;
 
-exports.addPost = async (req, res, next) => {
+const addPost = async (req, res, next) => {
     try {
         const timestamp = new Date();
 
@@ -48,7 +48,7 @@ exports.addPost = async (req, res, next) => {
 /*This query should me modified! [Post filtering algorithm]*/
 const get_posts_prepared_stmt = `SELECT * FROM posts LIMIT 10 OFFSET ?`;
 
-exports.getPosts = async (req, res, next) => {
+const getPosts = async (req, res, next) => {
     try {
         console.log("Get Posts");
         const offset = parseInt(req.query.from);
@@ -84,7 +84,7 @@ const insert_comment_prepared_stmt = `INSERT INTO comments (
     content
 ) VALUES (?, ?, ?, ?)`;
 
-exports.addComment = async (req, res, next) => {
+const addComment = async (req, res, next) => {
     try {
         const timestamp = new Date();
 
@@ -128,7 +128,7 @@ exports.addComment = async (req, res, next) => {
 
 const get_comments_prepared_stmt = `SELECT * FROM comments WHERE post_id = ? LIMIT 5 OFFSET ?`;
 
-exports.getComments = async (req, res, next) => {
+const getComments = async (req, res, next) => {
     try {
         const post_id = parseInt(req.params.post_id);
         const offset = parseInt(req.query.from);
@@ -154,4 +154,11 @@ exports.getComments = async (req, res, next) => {
             },
         });
     }
+};
+
+export default {
+    addPost,
+    addComment,
+    getComments,
+    getPosts,
 };

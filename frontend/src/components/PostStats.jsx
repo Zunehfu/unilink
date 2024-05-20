@@ -12,24 +12,15 @@ export default function PostStats({
 
     async function handleSubmission() {
         try {
-            const res = await pfetch("/posts/" + post_id + "/comments", {
+            await pfetch("/posts/" + post_id + "/comments", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ content }),
             });
-
-            if (!res.ok) {
-                throw new Error("Request failed");
-            }
-
-            const response = await res.json();
-            console.log("Response data:", response);
-            if (response.data.hasOwnProperty("auth_fail"))
-                return navigate("/signin");
         } catch (err) {
-            console.error("Fetch error:", err);
+            if (err.code == "AUTH_FAIL") return navigate("/signin");
         } finally {
             setContent("");
         }

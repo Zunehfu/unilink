@@ -59,7 +59,7 @@ const relationship_status_l = [
 const interested_in_l = ["Men", "Women", "Other"];
 const gender_l = ["Male", "Female", "Other"];
 
-module.exports = {
+export default {
     university_l,
     major_l,
     relationship_status_l,

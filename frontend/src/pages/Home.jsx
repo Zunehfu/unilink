@@ -8,8 +8,11 @@ import Loader from "../components/Loader";
 import AddPostButton from "../components/AddPostButton";
 import TopLevelLayerProfile from "../components/TopLevelLayerProfile";
 import Search from "../components/Search";
+import io from "socket.io-client";
+const socket = io.connect("http://localhost:8080");
 
 export default function Home() {
+    console.log("render");
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState([]);

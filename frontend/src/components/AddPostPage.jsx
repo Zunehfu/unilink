@@ -17,7 +17,7 @@ export default function AddPostPage({
 
     async function handleSubmission() {
         try {
-            const res = await pfetch("/posts", {
+            const data = await pfetch("/posts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -25,18 +25,9 @@ export default function AddPostPage({
                 body: JSON.stringify({ content, hideme, visibility }),
             });
 
-            if (!res.ok) {
-                throw new Error("Request failed");
-            }
-
-            const response = await res.json();
-            console.log("Response data:", response);
-
-            if (response.data.hasOwnProperty("auth"))
-                return navigate("/signin");
-            setPosts([...posts, response.data]);
+            setPosts([...posts, data]);
         } catch (err) {
-            console.error("Fetch error:", err);
+            if (err.code == "AUTH_FAIL") return navigate("/signin");
         } finally {
             setContent("");
             setHideme(false);

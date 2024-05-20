@@ -1,9 +1,9 @@
-const pool = require("../database");
-const jwt = require("jsonwebtoken");
+import pool from "../utils/database.js";
+import jwt from "jsonwebtoken";
 
 const get_user_prepared_stmt__user_id = `SELECT * FROM users WHERE user_id = ?`;
 
-exports.validate = async (req, res, next) => {
+const validate = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
 
@@ -51,7 +51,7 @@ exports.validate = async (req, res, next) => {
     }
 };
 
-exports.protectRoute = async (req, res, next) => {
+const protectRoute = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
 
@@ -96,7 +96,7 @@ exports.protectRoute = async (req, res, next) => {
 
 const get_user_prepared_stmt__username = `SELECT * FROM users WHERE username = ?`;
 
-exports.verifySignin = async (req, res, next) => {
+const verifySignin = async (req, res, next) => {
     try {
         const [rows] = await pool.query(get_user_prepared_stmt__username, [
             req.body.username,
@@ -157,7 +157,7 @@ const insert_user_prepared_stmt = `INSERT INTO users (
     last_online
 ) VALUES (?, ?, ?, ?, ?, ?)`;
 
-exports.verifySignup = async (req, res, next) => {
+const verifySignup = async (req, res, next) => {
     try {
         const timestamp = new Date();
 
@@ -187,4 +187,11 @@ exports.verifySignup = async (req, res, next) => {
             },
         });
     }
+};
+
+export default {
+    validate,
+    protectRoute,
+    verifySignin,
+    verifySignup,
 };

@@ -1,5 +1,5 @@
-const mysql = require("mysql2");
-const dotenv = require("dotenv");
+import mysql from "mysql2";
+import dotenv from "dotenv";
 
 dotenv.config({ path: "./config.env" });
 
@@ -24,4 +24,4 @@ const pool = mysql
     })
     .promise();
 
-module.exports = pool;
+export default pool;
