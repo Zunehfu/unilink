@@ -18,6 +18,7 @@ export default function MainPage() {
     const pfetch = usePfetch();
 
     const [posts, setPosts] = useState([]);
+    const [v, sv] = useState("");
 
     const [addPostVisibility, setAddPostVisibility] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -35,17 +36,14 @@ export default function MainPage() {
     };
 
     useEffect(() => {
-        console.log("im here 1");
         const checkValidity = async () => {
             try {
-                console.log("im here 2");
                 const data = await pfetch("/validate", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
                 });
-                console.log("im here 3");
                 setUid(data.user_id);
             } catch (err) {
                 if (err.code === "AUTH_FAIL") return navigate("/signin");
@@ -58,6 +56,16 @@ export default function MainPage() {
         checkValidity();
     }, []);
 
+    useEffect(() => {
+        socket.emit("send_message", { message: v });
+    }, [v]);
+
+    useEffect(() => {
+        socket.on("recieve_message", (data) => {
+            alert(data.message);
+        });
+    }, [socket]);
+
     return (
         <toggleProfile_c.Provider value={{ userId_profile, setUserId_profile }}>
             <uid_c.Provider value={uid}>
@@ -66,6 +74,11 @@ export default function MainPage() {
                         <Loader />
                     ) : (
                         <div>
+                            <input
+                                className="mt-20 border-2"
+                                value={v}
+                                onChange={(e) => sv(e.target.value)}
+                            />
                             <Header
                                 toggleSearchVisibility={toggleSearchVisibility}
                             />
