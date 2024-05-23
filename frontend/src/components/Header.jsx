@@ -1,29 +1,23 @@
-import HeaderItem from "./HeaderItem";
+import React from "react";
 import Logo from "./Logo";
-
-export default function Header({ toggleSearchVisibility }) {
+export default function Headern() {
     return (
-        <div className="flex fixed z-0 top-0 left-0 right-0 bg-white shadow-sm">
-            <div className="w-fit mb-2">
+        <div className="h-14 bg-dark sticky text-white flex justify-between">
+            <div className="ml-1 flex justify-center items-center">
                 <Logo />
             </div>
-            <div className="flex justify-evenly w-full mb-2">
-                <HeaderItem
-                    toggleSearchVisibility={toggleSearchVisibility}
-                    item="Profile"
-                />
-                <HeaderItem
-                    toggleSearchVisibility={toggleSearchVisibility}
-                    item="Posts"
-                />
-                <HeaderItem
-                    toggleSearchVisibility={toggleSearchVisibility}
-                    item="Friends"
-                />
-                <HeaderItem
-                    toggleSearchVisibility={toggleSearchVisibility}
-                    item="Messages"
-                />
+            <div className="mr-2 flex items-center font-normal font-[Lexend] text-sm tracking-wider">
+                <span className="mr-2 hover:underline hover:text-green-300 cursor-pointer">
+                    Privacy policy
+                </span>
+                <span>&#x2022;</span>
+                <span className="mx-2 hover:underline hover:text-green-300 cursor-pointer">
+                    About
+                </span>
+                <span>&#x2022;</span>
+                <span className="ml-2 hover:underline hover:text-green-300 cursor-pointer">
+                    Settings
+                </span>
             </div>
         </div>
     );

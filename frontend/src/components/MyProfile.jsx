@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { usePfetch } from "../hooks/usePfetch";
 import { ThreeDots } from "react-loader-spinner";
 import svalues from "../utils/currentlySupportedValues";
-import { Toaster, toast } from "sonner";
-import { toggleProfile_c } from "../contexts/ProfileContext";
+import { toast } from "sonner";
+import { TabContext } from "../contexts/TabContext";
 
 export default function MyProfile() {
     const pfetch = usePfetch();
-    const { setUserId_profile } = useContext(toggleProfile_c);
+    const { setTab } = useContext(TabContext);
 
     const [loading, setLoading] = useState(true);
     const [editingField, setEditingField] = useState("");
@@ -55,7 +55,8 @@ export default function MyProfile() {
 
         fetchUser();
         toast.info(
-            "You can adjust what details to display or not in settings under 'privacy'"
+            "You can adjust what details to display or not in settings under 'privacy'",
+            { position: "bottom-center" }
         );
     }, []);
 
@@ -63,7 +64,6 @@ export default function MyProfile() {
 
     return (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-10 backdrop-blur-sm ">
-            <Toaster position="bottom-center" richColors />
             <div className="relative rounded-md h-[90vh] w-[90vw] max-w-[900px] bg-white overflow-y-scroll">
                 {loading ? (
                     <div className="h-full w-full flex items-center justify-center">
@@ -88,7 +88,7 @@ export default function MyProfile() {
                             </div>
                         </div> */}
                         <i
-                            onClick={() => setUserId_profile(-1)}
+                            onClick={() => setTab(0)}
                             className="fa-solid fa-xmark relative left-1.5 top-0 cursor-pointer transition-all hover:scale-150"
                         ></i>
 

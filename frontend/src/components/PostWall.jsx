@@ -5,10 +5,11 @@ import { usePfetch } from "../hooks/usePfetch";
 import SmallSpinner from "./SmallSpinner";
 import { useNavigate } from "react-router-dom";
 
-export default function PostWall({ posts, setPosts }) {
+export default function PostWall() {
     const pfetch = usePfetch();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [posts, setPosts] = useState([]);
 
     async function fetchPosts() {
         try {
@@ -58,7 +59,7 @@ export default function PostWall({ posts, setPosts }) {
     }, [loading]);
 
     return (
-        <div className="grid place-items-center mt-20">
+        <div className="mx-auto flex flex-col w-fit">
             {posts.map((item) => (
                 <PostText
                     key={item.post_id}

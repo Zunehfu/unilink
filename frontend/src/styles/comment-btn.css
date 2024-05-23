@@ -1,0 +1,16 @@
+.comment-btn {
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    top: 6px;
+
+    transition: transform 0.3s ease;
+}
+
+.comment-btn:hover {
+    transform: rotate(45deg);
+}
+
+.comment-btn:active {
+    scale: 0.5;
+}

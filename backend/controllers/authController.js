@@ -1,5 +1,7 @@
 import pool from "../utils/database.js";
 import jwt from "jsonwebtoken";
+import response from "../utils/response.js";
+import Err from "../utils/customErr.js";
 
 const get_user_prepared_stmt__user_id = `SELECT * FROM users WHERE user_id = ?`;
 
@@ -7,48 +9,39 @@ const validate = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
 
-        if (!token)
-            return res.json({
-                status: "ERROR",
-                code: "JWT_NOT_FOUND",
-                data: {
-                    auth_fail: true,
-                },
-            });
+        if (!token) throw new Err("JWT_NOT_FOUND");
 
         const decodedToken = jwt.verify(token, process.env.SECRET_STR);
-
         const [rows] = await pool.query(get_user_prepared_stmt__user_id, [
             decodedToken.user_id,
         ]);
-
         const user_ = rows[0];
 
-        if (!user_)
-            return res.json({
-                status: "ERROR",
-                code: "JWT_MALFORMED",
-                data: {
-                    auth_fail: true,
-                },
-            });
+        if (!user_) throw new Err("JWT_MALFORMED");
 
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: {
+        res.json(
+            response(true, "VALIDATE", {
                 auth_fail: false,
                 user_id: user_.user_id,
-            },
-        });
-    } catch (error) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                auth_fail: false,
-            },
-        });
+                name: user_.name,
+                username: user_.username,
+            })
+        );
+    } catch (err) {
+        if (err instanceof Err) {
+            res.json(
+                response(false, err.message, {
+                    auth_fail: true,
+                })
+            );
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    auth_fail: true,
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -57,51 +50,35 @@ const protectRoute = async (req, res, next) => {
         const token = req.headers.authorization;
         const client_uid = parseInt(req.headers["client-uid"]);
 
-        if (!token)
-            return res.json({
-                status: "ERROR",
-                code: "JWT_NOT_FOUND",
-                data: {
-                    auth_fail: true,
-                },
-            });
+        if (!token) throw new Err("JWT_NOT_FOUND");
 
         const decodedToken = jwt.verify(token, process.env.SECRET_STR);
-
         const [rows] = await pool.query(get_user_prepared_stmt__user_id, [
             decodedToken.user_id,
         ]);
-
         const user_ = rows[0];
 
-        if (!user_)
-            return res.json({
-                status: "ERROR",
-                code: "JWT_MALFORMED",
-                data: {
-                    auth_fail: true,
-                },
-            });
-
+        if (!user_) throw new Err("JWT_MALFORMED");
         if (!(user_.user_id === client_uid))
-            return res.json({
-                status: "ERROR",
-                code: "CLIENT_ID_MISMATCH",
-                data: {
-                    auth_fail: true,
-                },
-            });
+            throw new Err("CLIENT_ID_MISMATCH");
 
         req.user = user_;
         next();
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        if (err instanceof Err) {
+            res.json(
+                response(false, err.message, {
+                    auth_fail: true,
+                })
+            );
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    auth_fail: true,
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -113,25 +90,11 @@ const verifySignin = async (req, res, next) => {
             req.body.username,
         ]);
 
-        if (rows.length == 0)
-            return res.json({
-                status: "ERROR",
-                code: "AUTH_INVALID_USERNAME",
-                data: {
-                    message: "There's no account associated with this username",
-                },
-            });
+        if (rows.length == 0) throw new Err("AUTH_INVALID_USERNAME");
 
         const user_ = rows[0];
 
-        if (user_.pass != req.body.pass)
-            return res.json({
-                status: "ERROR",
-                code: "AUTH_INVALID_PASS",
-                data: {
-                    message: "Incorrect password!",
-                },
-            });
+        if (user_.pass != req.body.pass) throw new Err("AUTH_INVALID_PASS");
 
         const token = jwt.sign(
             { user_id: user_.user_id },
@@ -139,23 +102,23 @@ const verifySignin = async (req, res, next) => {
             { expiresIn: process.env.LOGIN_EXPIRES }
         );
 
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: {
+        res.json(
+            response(true, "VERIFY_SIGNIN", {
                 token,
                 expires:
                     parseInt(process.env.LOGIN_EXPIRES) / (1000 * 60 * 60 * 24),
-            },
-        });
+            })
+        );
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 

@@ -1,6 +1,5 @@
 export default class Err extends Error {
-    constructor(code, message) {
+    constructor(message) {
         super(message);
-        this.code = code;
     }
 }

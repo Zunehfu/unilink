@@ -1,145 +1,22 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import ProfileItemForProfile from "./ProfileItemForProfile";
-import { usePfetch } from "../hooks/usePfetch";
 import { ThreeDots } from "react-loader-spinner";
-import { useNavigate } from "react-router-dom";
 import "../styles/profile-uni.css";
-import { toggleProfile_c } from "../contexts/ProfileContext";
+import { ProfileContext } from "../contexts/ProfileContext";
+import { useProfileFetch } from "../hooks/useProfileFetch";
+import { usePalInteractions } from "../hooks/usePalInteractions";
 
 export default function Profile() {
-    const pfetch = usePfetch();
-    const { setUserId_profile, userId_profile } = useContext(toggleProfile_c);
-    const [loading, setLoading] = useState(true);
-    const [values, setValues] = useState({});
-    const navigate = useNavigate();
-    const [palStatus, setPalStatus] = useState(0);
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const data = await pfetch("/users?user_id=" + userId_profile, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                setPalStatus(data.pal_status);
-                setValues({
-                    Username: data.username,
-                    "Member since": data.created_at,
-                    Name: data.name || "Remains unchanged",
-                    Age: data.age || "Remains unchanged",
-                    University: data.university,
-                    Major: data.major || "Remains unchanged",
-                    Batch: data.batch || "Remains unchanged",
-                    "Relationship status":
-                        data.relationship_status || "Remains unchanged",
-                    Gender: data.gender || "Remains unchanged",
-                    "Contact No": data.contact || "Remains unchanged",
-                    "Uni email": data.email,
-                    "Personal email":
-                        data.personal_email || "Remains unchanged",
-                    "Personal website": data.website || "Remains unchanged",
-                    "Interested in": data.interested_in || "Remains unchanged",
-                    "Date of birth": data.birth_date || "Remains unchanged",
-                });
-            } catch (err) {
-                if (err.code == "AUTH_FAIL") return navigate("/signin");
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchUser();
-    }, []);
-
-    const handleSendPalProposal = async () => {
-        try {
-            const data = await pfetch(
-                "/palproposals?user_id=" + userId_profile,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            setPalStatus(data.pal_status);
-        } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
-        }
-    };
-
-    const handleUnpal = async () => {
-        try {
-            const data = await pfetch("/pals?user_id=" + userId_profile, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            setPalStatus(data.pal_status);
-        } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
-        }
-    };
-
-    const handleWithdrawPalProposal = async () => {
-        try {
-            const data = await pfetch(
-                "/palproposals?user_id=" + userId_profile,
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            setPalStatus(data.pal_status);
-        } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
-        }
-    };
-
-    const handleAcceptPalProposal = async () => {
-        try {
-            const data = await pfetch(
-                "/mypalproposals?accept=true&user_id=" + userId_profile,
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            setPalStatus(data.pal_status);
-        } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
-        }
-    };
-
-    const handleRejectPalProposal = async () => {
-        try {
-            const data = await pfetch(
-                "/mypalproposals?accept=false&user_id=" + userId_profile,
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            setPalStatus(data.pal_status);
-        } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
-        }
-    };
+    const { setUserId_profile, palStatus, userId_profile } =
+        useContext(ProfileContext);
+    const { loading, values } = useProfileFetch();
+    const {
+        handleAcceptPalProposal,
+        handleRejectPalProposal,
+        handleWithdrawPalProposal,
+        handleUnpal,
+        handleSendPalProposal,
+    } = usePalInteractions(userId_profile);
 
     return (
         <>
@@ -212,7 +89,7 @@ export default function Profile() {
                                                 className="active:text-white hover:text-green-700 hover:border-green-700 transition-all border-l-2 border-t-2 border-b-2 rounded-l-md border-green-300 bg-green-300 text-white py-1 px-3"
                                             >
                                                 Accept{" "}
-                                                <i class="fa-solid fa-check"></i>
+                                                <i className="fa-solid fa-check"></i>
                                             </button>
                                             <button
                                                 onClick={
@@ -221,7 +98,7 @@ export default function Profile() {
                                                 className="active:text-white hover:text-red-700 hover:border-red-700 transition-all border-r-2 border-t-2 border-b-2  rounded-r-md border-red-300 bg-red-300 text-white py-1 px-3"
                                             >
                                                 Reject{" "}
-                                                <i class="fa-solid fa-xmark"></i>
+                                                <i className="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>
                                     </>

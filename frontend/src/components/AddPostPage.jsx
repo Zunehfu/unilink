@@ -1,20 +1,17 @@
-import { useState } from "react";
-import SmallSpinner from "./SmallSpinner";
+import { useContext, useState } from "react";
+import { TabContext } from "../contexts/TabContext";
 import { usePfetch } from "../hooks/usePfetch";
-import { useNavigate } from "react-router-dom";
+import SmallSpinner from "./SmallSpinner";
+import Err from "../utils/errClass";
+import { toast } from "sonner";
 
-export default function AddPostPage({
-    toggleAddPostVisibility,
-    setPosts,
-    posts,
-}) {
+export default function AddPostPage() {
     const pfetch = usePfetch();
+    const { setTab } = useContext(TabContext);
     const [content, setContent] = useState("");
     const [hideme, setHideme] = useState(false);
     const [visibility, setVisibility] = useState(0);
     const [loading, setLoading] = useState(false);
-
-    const navigate = useNavigate();
 
     async function handleSubmission() {
         try {
@@ -25,10 +22,11 @@ export default function AddPostPage({
                 },
                 body: JSON.stringify({ content, hideme, visibility }),
             });
-
-            setPosts([...posts, data]);
         } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
+            if (!(err instanceof Err)) {
+                console.error(err.message);
+                toast.error("Unexpected error occured");
+            }
         } finally {
             setContent("");
             setHideme(false);
@@ -42,7 +40,7 @@ export default function AddPostPage({
             <div className="rounded-lg w-[400px] bg-gray-300 p-4 ">
                 <label htmlFor="yo">What do you have in your mind?</label>
                 <i
-                    onClick={toggleAddPostVisibility}
+                    onClick={() => setTab(0)}
                     className="fa-solid fa-xmark relative left-[130px] top-[-10px] cursor-pointer hover:text-green-500"
                 ></i>
                 <br />

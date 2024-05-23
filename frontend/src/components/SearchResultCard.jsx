@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { toggleProfile_c } from "../contexts/ProfileContext";
+import { ProfileContext } from "../contexts/ProfileContext";
 
 export default function SearchResultCard({ item, roundTop, roundBottom }) {
-    const { setUserId_profile } = useContext(toggleProfile_c);
+    const { setUserId_profile } = useContext(ProfileContext);
     return (
         <>
             <div

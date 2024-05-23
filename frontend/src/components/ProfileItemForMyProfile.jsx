@@ -2,38 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import { usePfetch } from "../hooks/usePfetch";
 import userDataErrorHandler from "../utils/userDataErrorHandler";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import DropMenuForMyProfile from "./DropMenuForMyProfile";
-
-function searchList(list, searchTerm) {
-    const pfetch = usePfetch();
-    const normalizedSearchTerm = searchTerm.toLowerCase().replace(/%/g, "");
-    const calculateScore = (item, searchTerm) => {
-        const normalizedItem = item.toLowerCase();
-
-        if (normalizedItem === searchTerm) return 3;
-
-        if (
-            normalizedItem.startsWith(searchTerm) ||
-            normalizedItem.endsWith(searchTerm)
-        )
-            return 2;
-
-        if (normalizedItem.includes(searchTerm)) return 1;
-
-        return 0;
-    };
-    const scoredList = list.map((item) => ({
-        item,
-        score: calculateScore(item, normalizedSearchTerm),
-    }));
-    const filteredList = scoredList.filter(
-        (scoredItem) => scoredItem.score > 0
-    );
-    filteredList.sort((a, b) => b.score - a.score);
-    return filteredList.map((scoredItem) => scoredItem.item);
-}
+import Err from "../utils/errClass";
+import searchList from "../utils/searchList";
+import getErrorMessage from "../utils/errorMessages";
 
 export default function ProfileItemForMyProfile({
     editingField,
@@ -44,7 +17,7 @@ export default function ProfileItemForMyProfile({
     editable,
     items,
 }) {
-    const navigate = useNavigate();
+    const pfetch = usePfetch();
     const [err, setErr] = useState(false);
     const [val, setVal] = useState(values[field]);
     const [loading, setLoading] = useState(false);
@@ -66,10 +39,14 @@ export default function ProfileItemForMyProfile({
             if (data.age_)
                 setValues({ ...values, [field]: val, Age: data.age_ });
             else setValues({ ...values, [field]: val });
-            toast.success(data.message);
+
+            toast.success("Profile updated successfully.", {
+                position: "bottom-center",
+            });
         } catch (err) {
-            if (err.code === "AUTH_FAIL") return navigate("/signin");
-            toast.error(err.message);
+            if (!(err instanceof Err)) {
+                console.error(err.message);
+            }
         } finally {
             setEditingField("");
             setLoading(false);
@@ -83,11 +60,18 @@ export default function ProfileItemForMyProfile({
             }
             try {
                 userDataErrorHandler(field, val);
-                toast.success("This looks ok!");
+                toast.success("Looks fine.", { position: "bottom-center" });
                 setErr(false);
             } catch (err) {
-                toast.error(err.message);
                 setErr(true);
+                if (!(err instanceof Err)) {
+                    console.error(err.message);
+                    toast.error(err.message, { position: "bottom-center" });
+                } else {
+                    toast.error(getErrorMessage(err.message), {
+                        position: "bottom-center",
+                    });
+                }
             }
         }
     }, [val]);

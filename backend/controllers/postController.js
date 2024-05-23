@@ -1,4 +1,6 @@
 import pool from "../utils/database.js";
+import Err from "../utils/customErr.js";
+import response from "../utils/response.js";
 
 const insert_post_prepared_stmt = `INSERT INTO posts (
     user_id, 
@@ -29,19 +31,17 @@ const addPost = async (req, res, next) => {
         console.log(rows);
         console.log("at here");
         console.log(post_);
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: post_,
-        });
+        res.json(response(true, "ADD_POST", post_));
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -61,19 +61,17 @@ const getPosts = async (req, res, next) => {
 
         await new Promise((resolve) => setTimeout(resolve, 5000));
 
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: rows,
-        });
+        res.json(response("SUCCESS", "GET_POSTS", rows));
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -110,19 +108,17 @@ const addComment = async (req, res, next) => {
 
         console.log(rows);
 
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: rows[0],
-        });
+        res.json(response(true, "ADD_COMMENT", rows[0]));
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -140,19 +136,17 @@ const getComments = async (req, res, next) => {
 
         await new Promise((resolve) => setTimeout(resolve, 5000));
 
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: rows,
-        });
+        res.json(response(true, "GET_COMMENTS", rows));
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 

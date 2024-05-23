@@ -48,13 +48,14 @@ export default function PostText({ postData }) {
 
     return (
         <>
-            <div className="border-2 w-96 m-2 rounded">
-                <PostContent content={postData.content} />
-                <hr />
+            <div className="w-96 my-2 rounded-xl bg-dark text-white px-1">
                 <PostDetails
                     user_id={postData.user_id}
                     created_at={postData.created_at}
                 />
+                <hr />
+                <PostContent content={postData.content} />
+                <hr />
                 <PostStats
                     post_id={postData.post_id}
                     comments={comments}

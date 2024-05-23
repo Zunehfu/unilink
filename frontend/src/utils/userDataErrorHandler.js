@@ -7,59 +7,44 @@ export default function userDataErrorHandler(field, val) {
 
     if (field === "Name") {
         if (value.length < 3 || value.length > 64) {
-            throw new Err(
-                "INVALID_VALUE",
-                "Please enter a name in between 3 - 64 characters"
-            );
+            throw new Err("INVALID_VALUE_NAME");
         }
     } else if (field === "Major") {
         value = svalues.major_l.find((val) => val.toLowerCase() === lvalue);
         if (!value) {
-            throw new Err(
-                "INVALID_VALUE",
-                "Please select a valid major from the given list"
-            );
+            throw new Err("INVALID_VALUE_MAJOR");
         }
     } else if (field === "Batch") {
         if (!/^(201[5-9]|202[0-4])$/.test(value)) {
-            throw new Err("INVALID_VALUE", "This batch is not acceptable");
+            throw new Err("INVALID_VALUE_BATCH");
         }
     } else if (field === "Relationship status") {
         value = svalues.relationship_status_l.find(
             (val) => val.toLowerCase() === lvalue
         );
         if (!value) {
-            throw new Err(
-                "INVALID_VALUE",
-                "Please select a valid relationship status from the given list"
-            );
+            throw new Err("INVALID_VALUE_RELATIONSHIPSTATUS");
         }
     } else if (field === "Gender") {
         value = svalues.gender_l.find((val) => val.toLowerCase() === lvalue);
         if (!value) {
-            throw new Err(
-                "INVALID_VALUE",
-                "Please select a valid gender from the given list"
-            );
+            throw new Err("INVALID_VALUE_GENDER");
         }
     } else if (field === "Contact No") {
         if (!/^\+?[0-9]{10,15}$/.test(value)) {
-            throw new Err(
-                "INVALID_VALUE",
-                "This contact number seems a bit off"
-            );
+            throw new Err("INVALID_VALUE_CONTACT");
         }
     } else if (field === "Personal email") {
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-            throw new Err("INVALID_VALUE", "This email seems a bit off");
+            throw new Err("INVALID_VALUE_EMAIL");
         }
     } else if (field === "Persosal website") {
         if (!urlPattern.test(value)) {
-            throw new Err("INVALID_VALUE", "This is not a valid url");
+            throw new Err("INVALID_VALUE_WEBSITE");
         }
     } else if (field === "Interested in") {
         if (!value) {
-            throw new Err("INVALID_VALUE", "Please select from the given list");
+            throw new Err("INVALID_VALUE_INTERESTEDIN");
         }
     } else if (field === "Date of birth") {
         if (
@@ -67,13 +52,10 @@ export default function userDataErrorHandler(field, val) {
                 value
             )
         ) {
-            throw new Err("INVALID_VALUE", "The entered date is not valid");
+            throw new Err("INVALID_VALUE_BIRTHDATE");
         }
     } else {
-        throw new Err(
-            "INVALID_PROFILE_FIELD",
-            "Something went wrong. Please try again later"
-        );
+        throw new Err("INVALID_PROFILE_FIELD");
     }
     return 0;
 }

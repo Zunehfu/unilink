@@ -17,8 +17,7 @@ const getUserWithId = async (req, res, next) => {
             [user_id]
         );
         const user_ = rows_q1[0];
-        if (!user_)
-            throw new Err("INVALID_USER_ID", "This person doesn't exist!");
+        if (!user_) throw new Err("INVALID_USER_ID");
         const [rows_q3] = await conn.query(
             `SELECT EXISTS(SELECT 1 FROM pals WHERE (user_id_from = ? AND user_id_to = ?) OR (user_id_from = ? AND user_id_to = ?) LIMIT 1) AS pals_`,
             [req.user.user_id, user_id, user_id, req.user.user_id]
@@ -36,7 +35,7 @@ const getUserWithId = async (req, res, next) => {
         }
 
         res.json(
-            response(true, "NONE", {
+            response(true, "GET_USER", {
                 name: user_.name,
                 created_at: moment(user_.created_at).format("YYYY-MM-DD"),
                 age: user_.age,
@@ -56,13 +55,15 @@ const getUserWithId = async (req, res, next) => {
             })
         );
     } catch (err) {
-        res.json(
-            response(
-                false,
-                err.code ? err.code : "UNEXPECTED_ERROR",
-                err.message
-            )
-        );
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     } finally {
         if (conn) conn.release();
     }
@@ -99,30 +100,24 @@ const betaresponse = async (req, res, next) => {
             );
 
             if (user_check[0].is_valid) {
-                throw new Err(
-                    "INVALID_VALUE",
-                    "This username is not available"
-                );
+                throw new Err("INVALID_VALUE_USERNAME");
             }
 
             sql = "UPDATE users SET username = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Name") {
             if (value.length < 3 || value.length > 64) {
-                throw new Err(
-                    "INVALID_VALUE",
-                    "Please enter a name in between 3 - 64 characters"
-                );
+                throw new Err("INVALIED_VALUE_NAME");
             }
             sql = "UPDATE users SET name = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Major") {
             value = svalues.major_l.find((val) => val.toLowerCase() === lvalue);
             if (!value) {
-                throw new Err("INVALID_VALUE", "This major is not acceptable");
+                throw new Err("INVALID_VALUE_MAJOR");
             }
             sql = "UPDATE users SET major = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Batch") {
             if (!/^(201[5-9]|202[0-4])$/.test(value)) {
-                throw new Err("INVALID_VALUE", "This batch is not acceptable");
+                throw new Err("INVALID_VALUE_BATCH");
             }
 
             sql = "UPDATE users SET batch = ? WHERE user_id = ? LIMIT 1";
@@ -141,23 +136,20 @@ const betaresponse = async (req, res, next) => {
             sql = "UPDATE users SET gender = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Contact No") {
             if (!/^\+?[0-9]{10,15}$/.test(value)) {
-                throw new Err(
-                    "INVALID_VALUE",
-                    "This contact number seems a bit off"
-                );
+                throw new Err("INVALID_VALUE_CONTACT");
             }
             sql = "UPDATE users SET contact = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Personal email") {
             if (
                 !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
             ) {
-                throw new Err("INVALID_VALUE", "This email seems a bit off");
+                throw new Err("INVALID_VALUE_EMAIL");
             }
             sql =
                 "UPDATE users SET personal_email = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Personal website") {
             if (!urlPattern.test(value)) {
-                throw new Err("INVALID_VALUE", "This is not a valid url");
+                throw new Err("INVALID_VALUE_WEBSITE");
             }
             sql = "UPDATE users SET website = ? WHERE user_id = ? LIMIT 1";
         } else if (field === "Interested in") {
@@ -173,7 +165,7 @@ const betaresponse = async (req, res, next) => {
                     value
                 )
             ) {
-                throw new Err("INVALID_VALUE", "This date is not valid");
+                throw new Err("INVALID_VALUE_BIRTHDATE");
             }
             age_ =
                 parseInt(new Date().getFullYear()) -
@@ -184,26 +176,30 @@ const betaresponse = async (req, res, next) => {
             ]);
             sql = "UPDATE users SET birth_date = ? WHERE user_id = ? LIMIT 1";
         } else {
-            throw new Err(
-                "INVALID_PROFILE_FIELD",
-                "Cannot be updated at the moment"
-            );
+            throw new Err("INVALID_PROFILE_FIELD");
         }
 
         const [results] = await pool.query(sql, [value, req.user.user_id]);
 
         if (!results.affectedRows) {
-            throw new Err("DATABASE_UPDATE_FAILED", "Something went wrong");
+            throw new Err("DATABASE_UPDATE_FAILED");
         }
 
         res.json(
-            response(true, "NONE", {
-                message: "Profile updated successfully",
+            response(true, "PROFILE_UPDATE", {
                 age_: age_ ? age_ : null,
             })
         );
     } catch (err) {
-        res.json(response(false, err.code || "UNEXPECTED_ERROR", err.message));
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -220,55 +216,90 @@ const getLikeUsers = async (req, res, next) => {
 
         const q = "%" + req.query.q.trim() + "%";
 
-        if (q == "%%")
-            return res.json({
-                status: "SUCCESS",
-                code: "NONE",
-                data: [],
-            });
+        if (q == "%%") return res.json(response(true, "SEARCH_USERS", []));
 
         const [rows] = await pool.query(get_likeusers_prepared_stmt, [q, q]);
 
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: rows,
-        });
+        res.json(response(true, "SEARCH_USERS", rows));
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
-        });
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
-const insert_palproposal_prepared_stmt = `INSERT INTO pal_proposals (
-    user_id_from, 
-    user_id_to 
-) VALUES (?, ?)`;
-
 const sendPalProposal = async (req, res, next) => {
+    let conn;
     try {
-        await pool.query(insert_palproposal_prepared_stmt, [
-            req.user.user_id,
-            req.query.user_id,
-        ]);
+        // same person check
+        if (req.query.user_id == req.user.user_id)
+            throw new Err("SELF_PROPOSAL");
+
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+
+        // checking whether they are already pals?
+        const [rows_q1] = await conn.query(
+            `SELECT EXISTS(SELECT 1 FROM pals WHERE (user_id_from = ? AND user_id_to = ?) OR (user_id_from = ? AND user_id_to = ?) LIMIT 1) AS pals_`,
+            [
+                req.query.user_id,
+                req.user.user_id,
+                req.user.user_id,
+                req.query.user_id,
+            ]
+        );
+        if (rows_q1[0].pals_) throw new Err("ALREADY_PALS");
+
+        // checking whether if there are any existing proposals between 2?
+        const [rows_q2] = await conn.query(
+            `SELECT EXISTS(SELECT 1 FROM pal_proposals WHERE (user_id_from = ? AND user_id_to = ?) OR (user_id_from = ? AND user_id_to = ?) LIMIT 1) AS pals_`,
+            [
+                req.query.user_id,
+                req.user.user_id,
+                req.user.user_id,
+                req.query.user_id,
+            ]
+        );
+        if (rows_q2[0].pals_) throw new Err("PROPOSAL_DUPLICATION");
+
+        // no expected errors proceed
+        await conn.query(
+            `INSERT INTO pal_proposals (
+            user_id_from, 
+            user_id_to 
+        ) VALUES (?, ?)`,
+            [req.user.user_id, req.query.user_id]
+        );
+
+        conn.commit();
 
         res.json(
-            response(true, "NONE", {
-                message: "Sent Pal proposal!",
+            response(true, "SEND_PROPOSAL", {
                 pal_status: 3,
             })
         );
     } catch (err) {
-        res.json(
-            response(false, "CATCH_ERROR", {
-                message: err.message,
-            })
-        );
+        if (conn) {
+            await conn.rollback();
+        }
+
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
+    } finally {
+        if (conn) conn.release();
     }
 };
 
@@ -280,17 +311,21 @@ const removePalProposal = async (req, res, next) => {
         );
 
         res.json(
-            response(true, "NONE", {
+            response(true, "WITHDRAW_PROPOSAL", {
                 message: "Removed pal request successfully!",
                 pal_status: 0,
             })
         );
     } catch (err) {
-        res.json(
-            response(false, "CATCH_ERROR", {
-                message: err.message,
-            })
-        );
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -316,25 +351,32 @@ const removeMyPalProposal = async (req, res, next) => {
         await conn.commit();
 
         res.json(
-            response(true, "NONE", {
-                message: "Pal proposal removed successfully",
-                pal_status: req.query.accept == "true" ? 1 : 0,
-            })
+            response(
+                true,
+                req.query.accept == "true"
+                    ? "ACCEPT_PROPOSAL"
+                    : "REJECT_PROPOSAL",
+                {
+                    pal_status: req.query.accept == "true" ? 1 : 0,
+                }
+            )
         );
     } catch (err) {
         if (conn) {
             await conn.rollback();
         }
 
-        res.json(
-            response(false, "CATCH_ERROR", {
-                message: err.message,
-            })
-        );
-    } finally {
-        if (conn) {
-            conn.release();
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
         }
+    } finally {
+        if (conn) conn.release();
     }
 };
 
@@ -355,17 +397,20 @@ const removePal = async (req, res, next) => {
         );
 
         res.json(
-            response(true, "NONE", {
-                message: "Removed pal successfully!",
+            response(true, "UNPAL", {
                 pal_status: 0,
             })
         );
     } catch (err) {
-        res.json(
-            response(false, "CATCH_ERROR", {
-                message: err.message,
-            })
-        );
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -382,13 +427,17 @@ const getMyPalProposals = async (req, res, next) => {
             req.user.user_id,
         ]);
 
-        res.json(response(true, "NONE", rows));
+        res.json(response(true, "GET_PROPOSALS", rows));
     } catch (err) {
-        res.json(
-            response(false, "CATCH_ERROR", {
-                message: err.message,
-            })
-        );
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
