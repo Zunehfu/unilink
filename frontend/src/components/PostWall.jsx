@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePfetch } from "../hooks/usePfetch";
 import SmallSpinner from "./SmallSpinner";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 export default function PostWall() {
     const pfetch = usePfetch();
@@ -59,16 +60,19 @@ export default function PostWall() {
     }, [loading]);
 
     return (
-        <div className="mx-auto flex flex-col w-fit">
-            {posts.map((item) => (
-                <PostText
-                    key={item.post_id}
-                    postData={item}
-                    posts={posts}
-                    setPosts={setPosts}
-                />
-            ))}
-            {loading && <SmallSpinner />}
-        </div>
+        <>
+            <Header />
+            <div className="mx-auto flex flex-col w-fit">
+                {posts.map((item) => (
+                    <PostText
+                        key={item.post_id}
+                        postData={item}
+                        posts={posts}
+                        setPosts={setPosts}
+                    />
+                ))}
+                {loading && <SmallSpinner />}
+            </div>
+        </>
     );
 }

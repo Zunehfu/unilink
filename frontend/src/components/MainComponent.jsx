@@ -7,6 +7,7 @@ import Loader from "./Loader";
 import Notification from "./Notification";
 import Footer from "./Footer";
 import MyProfile from "./MyProfile";
+import Inbox from "./Inbox";
 // libraries
 import Cookies from "js-cookie";
 import { Toaster, toast } from "sonner";
@@ -156,12 +157,12 @@ export default function MainComponent() {
             ) : (
                 <div>
                     <Toaster richColors />
-                    <Header />
+
                     <Footer />
                     {tab == 0 && <PostWall />}
                     {tab == 1 && <Search />}
                     {tab == 2 && <AddPostPage />}
-                    {/* {tab == 3 && <Notifications />} */}
+                    {tab == 3 && <Inbox />}
                     {tab == 4 && <MyProfile />}
                 </div>
             )}

@@ -55,7 +55,6 @@ export default function Footer() {
                     onClick={(e) => handleClick(2)}
                     className="flex justify-center items-center cursor-pointer"
                 >
-                    {/* <i className="fa-regular fa-square-plus"></i> */}
                     <div className="rounded-[10px] relative bg-emerald-400 h-8 w-8 flex justify-center bg-gradient-to-tr from-indigo-500 via-sky-500 to-emerald-500 hover:scale-125 active:scale-100 transition-all">
                         <span className="relative -top-1.5 text-3xl">+</span>
                     </div>
@@ -72,7 +71,7 @@ export default function Footer() {
                                     ? "0 0 20px rgb(52, 211, 153), 0 0 30px rgb(45, 183, 132), 0 0 40px rgb(38, 155, 110), 0 0 50px rgb(31, 127, 89), 0 0 60px rgb(24, 99, 68), 0 0 70px rgb(17, 71, 47), 0 0 80px rgb(10, 43, 26) "
                                     : null,
                         }}
-                        className="fa-solid fa-bell"
+                        className="fa-solid fa-comments"
                     ></i>
                 </div>
                 <div

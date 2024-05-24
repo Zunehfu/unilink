@@ -17,7 +17,7 @@ export const usePfetch = () => {
                 options.headers = {
                     ...options.headers,
                     Authorization: token,
-                    "client-uid": userData.user_id ? userData.user_id : "",
+                    "client-uid": userData ? userData.user_id : -1,
                 };
             }
             const res = await fetch("http://localhost:8080" + url, options);
