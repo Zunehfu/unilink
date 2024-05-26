@@ -10,8 +10,8 @@ export default function Headern() {
                 Uni List
             </div>
             <div className="mr-2 flex items-center font-normal font-[Lexend] text-sm tracking-wider">
-                <i class="fa-solid fa-bell mr-5 scale-125"></i>
-                <i class="fa-solid fa-gear scale-125"></i>
+                <i className="cursor-pointer fa-solid fa-bell mr-5 scale-125"></i>
+                <i className="cursor-pointer fa-solid fa-gear scale-125"></i>
             </div>
         </div>
     );

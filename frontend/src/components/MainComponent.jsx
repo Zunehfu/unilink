@@ -1,6 +1,5 @@
 // components
-import Header from "./Header";
-import PostWall from "./PostWall";
+import Home from "./PostWall";
 import AddPostPage from "./AddPostPage";
 import Search from "./Search";
 import Loader from "./Loader";
@@ -54,7 +53,6 @@ export default function MainComponent() {
                 if (!(err instanceof Err)) {
                     console.error(err);
                 }
-            } finally {
                 setLoading(false);
             }
         };
@@ -121,6 +119,7 @@ export default function MainComponent() {
         socket.on("connect", () => {
             console.log("socket connection successful!");
             socket.emit("userid-safe-map", { token: Cookies.get("token") });
+            setLoading(false);
         });
 
         socket.on("on-palproposal-recieve", handlePalProposalReceive);
@@ -147,6 +146,7 @@ export default function MainComponent() {
                 "on-reject-sent-palproposal",
                 handleRejectSentPalProposal
             );
+            socket.disconnect();
         };
     }, []);
 
@@ -157,9 +157,8 @@ export default function MainComponent() {
             ) : (
                 <div>
                     <Toaster richColors />
-
                     <Footer />
-                    {tab == 0 && <PostWall />}
+                    {tab == 0 && <Home />}
                     {tab == 1 && <Search />}
                     {tab == 2 && <AddPostPage />}
                     {tab == 3 && <Inbox />}

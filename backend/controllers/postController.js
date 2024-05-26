@@ -46,22 +46,45 @@ const addPost = async (req, res, next) => {
 };
 
 /*This query should me modified! [Post filtering algorithm]*/
-const get_posts_prepared_stmt = `SELECT * FROM posts LIMIT 10 OFFSET ?`;
+const get_posts_prepared_stmt = `
+SELECT 
+    posts.*, 
+    users.username, 
+    users.name,
+    (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.post_id) AS like_count,
+    (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.post_id) AS comment_count,
+    CASE 
+        WHEN likes.user_id IS NULL THEN 0 
+        ELSE 1 
+    END AS liked
+FROM posts 
+JOIN users ON posts.user_id = users.user_id 
+LEFT JOIN likes ON posts.post_id = likes.post_id AND likes.user_id = ?
+LIMIT 10 OFFSET ?`;
 
 const getPosts = async (req, res, next) => {
+    let conn;
     try {
-        console.log("Get Posts");
-        const offset = parseInt(req.query.from);
+        const offset = parseInt(req.query.from, 10);
+        const userId = req.user.user_id;
 
-        let [rows] = await pool.query(get_posts_prepared_stmt, [offset]);
+        conn = await pool.getConnection();
 
-        rows.forEach((item) => {
-            item.comments = [];
-        });
+        const [posts] = await conn.query(get_posts_prepared_stmt, [
+            userId,
+            offset,
+        ]);
 
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-
-        res.json(response("SUCCESS", "GET_POSTS", rows));
+        res.json(
+            response(
+                true,
+                "GET_POSTS",
+                posts.map((post) => ({
+                    ...post,
+                    liked: post.liked === 1,
+                }))
+            )
+        );
     } catch (err) {
         if (err instanceof Err) {
             res.json(response(false, err.message, {}));
@@ -72,6 +95,8 @@ const getPosts = async (req, res, next) => {
                 })
             );
         }
+    } finally {
+        if (conn) conn.release();
     }
 };
 
@@ -150,8 +175,62 @@ const getComments = async (req, res, next) => {
     }
 };
 
+const add_like_stmt = `INSERT IGNORE INTO likes (post_id, user_id, created_at)
+VALUES (?, ?, ?);
+`;
+
+const addLike = async (req, res, next) => {
+    try {
+        console.log("hello");
+        await pool.query(add_like_stmt, [
+            req.params.post_id,
+            req.user.user_id,
+            new Date(),
+        ]);
+
+        res.json(response(true, "ADD_LIKE", {}));
+    } catch (err) {
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
+    }
+};
+
+const remove_like_stmt = `DELETE FROM likes
+WHERE user_id = ? AND post_id = ?;
+`;
+
+const removeLike = async (req, res, next) => {
+    console.log("fwafaw");
+    try {
+        await pool.query(remove_like_stmt, [
+            req.user.user_id,
+            req.params.post_id,
+        ]);
+        res.json(response(true, "REMOVE_LIKE", {}));
+    } catch (err) {
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
+    }
+};
+
 export default {
     addPost,
+    addLike,
+    removeLike,
     addComment,
     getComments,
     getPosts,

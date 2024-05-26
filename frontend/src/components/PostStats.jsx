@@ -3,11 +3,17 @@ import { usePfetch } from "../hooks/usePfetch";
 import { useNavigate } from "react-router-dom";
 import "../styles/like-btn.css";
 import "../styles/comment-btn.css";
+import Err from "../utils/errClass";
+import { socket } from "../services/socket";
 
 export default function PostStats({
-    comments,
     post_id,
     toggleCommentsVisibility,
+    liked,
+    setLiked,
+    setLike_count,
+    comment_count,
+    like_count,
 }) {
     const pfetch = usePfetch();
     const [content, setContent] = useState("");
@@ -29,6 +35,37 @@ export default function PostStats({
         }
     }
 
+    async function handleLikeButton(e) {
+        setLiked(e.target.checked);
+        if (e.target.checked) {
+            try {
+                await pfetch("/posts/" + post_id + "/likes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                socket.emit("on-add-like", { post_id: post_id });
+                setLike_count(like_count + 1);
+            } catch (err) {
+                if (!(err instanceof Err)) console.error(err);
+            }
+        } else {
+            try {
+                await pfetch("/posts/" + post_id + "/likes", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                socket.emit("on-remove-like", { post_id: post_id });
+                setLike_count(like_count - 1);
+            } catch (err) {
+                if (!(err instanceof Err)) console.error(err);
+            }
+        }
+    }
+
     return (
         <div className="h-9 flex justify-around items-center m-1">
             <div className="flex">
@@ -38,6 +75,8 @@ export default function PostStats({
                             id="Give-It-An-Id"
                             className="checkbox"
                             type="checkbox"
+                            checked={liked}
+                            onChange={(e) => handleLikeButton(e)}
                         />
                         <div className="svg-container">
                             <svg
@@ -70,14 +109,14 @@ export default function PostStats({
                         </div>
                     </div>
                 </div>
-                <small>9999</small>
+                <small>{like_count}</small>
             </div>
             <div className="flex">
                 <i
                     onClick={toggleCommentsVisibility}
                     className="mr-2 py-[2px] fa-regular fa-comment cursor-pointer scale-125"
                 ></i>
-                <small>{comments.length}</small>
+                <small>{comment_count}</small>
             </div>
             <div className="flex relative">
                 <input

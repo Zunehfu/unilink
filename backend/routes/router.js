@@ -23,6 +23,11 @@ router
     .get(authController.protectRoute, postController.getComments);
 
 router
+    .route("/posts/:post_id/likes")
+    .post(authController.protectRoute, postController.addLike)
+    .delete(authController.protectRoute, postController.removeLike);
+
+router
     .route("/users")
     .get(authController.protectRoute, userController.getUserWithId);
 

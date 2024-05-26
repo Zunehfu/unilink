@@ -5,6 +5,7 @@ import { usePfetch } from "../hooks/usePfetch";
 import SmallSpinner from "./SmallSpinner";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
+import { socket } from "../services/socket";
 
 export default function PostWall() {
     const pfetch = usePfetch();
@@ -25,6 +26,10 @@ export default function PostWall() {
             );
 
             setPosts([...posts, ...data]);
+            socket.emit(
+                "on-posts-loaded",
+                data.map((post) => post.post_id)
+            );
         } catch (err) {
             if (err.code == "AUTH_FAIL") return navigate("/signin");
         } finally {
@@ -64,12 +69,7 @@ export default function PostWall() {
             <Header />
             <div className="mx-auto flex flex-col w-fit">
                 {posts.map((item) => (
-                    <PostText
-                        key={item.post_id}
-                        postData={item}
-                        posts={posts}
-                        setPosts={setPosts}
-                    />
+                    <PostText key={item.post_id} postData={item} />
                 ))}
                 {loading && <SmallSpinner />}
             </div>
