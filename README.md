@@ -17,4 +17,5 @@ A social networking platform for university students
 6. App will be served on "http://localhost:5173".
 
 -- Additional notes
+
 Ensure that no services are running on ports 5173 and 8080.
