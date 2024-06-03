@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
+// Store currently connected users and posts in their feed
 let users = {};
 
 const findUserIdFromSocketId = (socketid) => {
@@ -9,7 +10,7 @@ const findUserIdFromSocketId = (socketid) => {
             return userId;
         }
     }
-    return null; // Return null if no user_id is found for the given socketid
+    return null;
 };
 
 const getUsersWithPostId = (postId) => {
@@ -23,6 +24,7 @@ const getUsersWithPostId = (postId) => {
 };
 
 const initializeSocket = (httpServer) => {
+    //prevent cross origin attacks
     const io = new Server(httpServer, {
         cors: {
             origin: "http://localhost:5173",
@@ -31,12 +33,21 @@ const initializeSocket = (httpServer) => {
     });
 
     io.on("connection", (socket) => {
+        // socket essentials
         console.log("socket connected", socket.id);
         socket.on("disconnect", () => {
             console.log("socket disconnected", socket.id);
             delete users[findUserIdFromSocketId(socket.id)];
         });
 
+        // safely map userids into server stored #users object
+        socket.on("userid-safe-map", (data) => {
+            const decodedToken = jwt.verify(data.token, process.env.SECRET_STR);
+            users[decodedToken.user_id] = { socketid: socket.id, posts: [] };
+            console.log(users);
+        });
+
+        // like-comment management
         socket.on("on-add-like", (data) => {
             socket
                 .to(getUsersWithPostId(data.post_id))
@@ -44,7 +55,6 @@ const initializeSocket = (httpServer) => {
                     post_id: data.post_id,
                 });
         });
-
         socket.on("on-remove-like", (data) => {
             socket
                 .to(getUsersWithPostId(data.post_id))
@@ -53,14 +63,8 @@ const initializeSocket = (httpServer) => {
                 });
         });
 
-        socket.on("userid-safe-map", (data) => {
-            const decodedToken = jwt.verify(data.token, process.env.SECRET_STR);
-            users[decodedToken.user_id] = { socketid: socket.id, posts: [] };
-            console.log(users);
-        });
-
+        // Set currently loaded posts of a particular user inside the #users obj
         socket.on("on-posts-loaded", (data) => {
-            console.log("on-posts-loaded");
             console.log(data);
             const userid = findUserIdFromSocketId(socket.id);
             if (!users[userid]) return;
@@ -72,6 +76,7 @@ const initializeSocket = (httpServer) => {
             };
         });
 
+        // Pal related handling
         socket.on("handle-send-palproposal", (data) => {
             console.log(data);
             if (!users[data.user_id_to]) return;

@@ -1,5 +1,8 @@
+// react
+import { useEffect, useState, useRef, useContext } from "react";
+
 // components
-import Home from "./PostWall";
+import Home from "./Home";
 import AddPostPage from "./AddPostPage";
 import Search from "./Search";
 import Loader from "./Loader";
@@ -7,31 +10,41 @@ import Notification from "./Notification";
 import Footer from "./Footer";
 import MyProfile from "./MyProfile";
 import Inbox from "./Inbox";
+import MentionPalette from "./MentionPalette";
+import Profile from "./Profile";
+
 // libraries
 import Cookies from "js-cookie";
 import { Toaster, toast } from "sonner";
+
 // contexts
 import { ProfileContext } from "../contexts/ProfileContext";
 import { TabContext } from "../contexts/TabContext";
 import { UserDataContext } from "../contexts/UserDataContext";
+import { MentionContext } from "../contexts/MentionContext";
+
 // custom hooks
 import { usePfetch } from "../hooks/usePfetch";
+
+//classes
+import Err from "../utils/errClass";
+
 // socket
 import { socket } from "../services/socket";
-// react
-import { useEffect, useState, useRef, useContext } from "react";
-import Err from "../utils/errClass";
 
 export default function MainComponent() {
     const pfetch = usePfetch();
 
     const { tab } = useContext(TabContext);
     const { userId_profile, setPalStatus } = useContext(ProfileContext);
-    const { setUserData } = useContext(UserDataContext);
+    const { setUserData, userData } = useContext(UserDataContext);
+    const { mentionStatus } = useContext(MentionContext);
 
     const [loading, setLoading] = useState(true);
 
     const userIdProfileRef = useRef(userId_profile);
+    const scrollref = useRef(null);
+    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
         const checkValidity = async () => {
@@ -48,6 +61,7 @@ export default function MainComponent() {
                     username: data.username,
                     name: data.name,
                 });
+
                 socket.connect();
             } catch (err) {
                 if (!(err instanceof Err)) {
@@ -68,6 +82,12 @@ export default function MainComponent() {
     }, [userId_profile]);
 
     useEffect(() => {
+        socket.on("connect", () => {
+            console.log("socket connection successful!");
+            socket.emit("userid-safe-map", { token: Cookies.get("token") });
+            setLoading(false);
+        });
+
         const handlePalProposalReceive = (data) => {
             console.log(userIdProfileRef.current, data.userData_from.user_id);
             if (userIdProfileRef.current === data.userData_from.user_id)
@@ -82,19 +102,16 @@ export default function MainComponent() {
                 }
             );
         };
-
         const handleWithdrawReceivedPalProposal = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
                 setPalStatus(0);
         };
-
         const handleBeingUnpaled = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
                 setPalStatus(0);
         };
-
         const handleAcceptSentPalProposal = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
@@ -109,18 +126,11 @@ export default function MainComponent() {
                 }
             );
         };
-
         const handleRejectSentPalProposal = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
                 setPalStatus(0);
         };
-
-        socket.on("connect", () => {
-            console.log("socket connection successful!");
-            socket.emit("userid-safe-map", { token: Cookies.get("token") });
-            setLoading(false);
-        });
 
         socket.on("on-palproposal-recieve", handlePalProposalReceive);
         socket.on(
@@ -158,13 +168,22 @@ export default function MainComponent() {
                 <div>
                     <Toaster richColors />
                     <Footer />
-                    {tab == 0 && <Home />}
+                    {tab == 0 && (
+                        <Home
+                            posts={posts}
+                            setPosts={setPosts}
+                            scrollref={scrollref}
+                        />
+                    )}
                     {tab == 1 && <Search />}
                     {tab == 2 && <AddPostPage />}
                     {tab == 3 && <Inbox />}
                     {tab == 4 && <MyProfile />}
+                    {mentionStatus == -1 && <MentionPalette />}
+                    {userId_profile != -1 && <Profile />}
                 </div>
             )}
         </div>
     );
 }
+Profile;

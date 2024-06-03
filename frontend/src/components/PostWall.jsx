@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
-import PostText from "./PostText";
-import { useState } from "react";
-import { usePfetch } from "../hooks/usePfetch";
-import SmallSpinner from "./SmallSpinner";
-import { useNavigate } from "react-router-dom";
-import Header from "./Header";
-import { socket } from "../services/socket";
+import { useEffect, useState } from "react";
 
-export default function PostWall() {
+import PostText from "./PostText";
+import SmallSpinner from "./SmallSpinner";
+import Header from "./Header";
+
+import { usePfetch } from "../hooks/usePfetch";
+import { socket } from "../services/socket";
+import { toast } from "sonner";
+import Err from "../utils/errClass";
+
+export default function PostWall({ posts, setPosts, scrollref }) {
     const pfetch = usePfetch();
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-    const [posts, setPosts] = useState([]);
 
     async function fetchPosts() {
         try {
@@ -31,13 +31,18 @@ export default function PostWall() {
                 data.map((post) => post.post_id)
             );
         } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
+            if (!(err instanceof Err)) {
+                console.error(err);
+                toast.error("Something went wrong");
+            }
         } finally {
             setLoading(false);
         }
     }
 
     function handleScroll() {
+        scrollref.current = window.scrollY;
+
         if (
             window.innerHeight + document.documentElement.scrollTop <
                 document.documentElement.offsetHeight ||
@@ -51,13 +56,14 @@ export default function PostWall() {
     }
 
     useEffect(() => {
-        setLoading(true);
-        fetchPosts();
+        if (posts.length == 0) {
+            setLoading(true);
+            fetchPosts();
+        } else window.scrollTo(0, scrollref.current);
     }, []);
 
     useEffect(() => {
-        if (loading) window.removeEventListener("scroll", handleScroll);
-        else window.addEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", handleScroll);
 
         return () => {
             window.removeEventListener("scroll", handleScroll);
@@ -67,7 +73,7 @@ export default function PostWall() {
     return (
         <>
             <Header />
-            <div className="mx-auto flex flex-col w-fit">
+            <div className="mx-auto md:ml-auto md:mr-[calc((100vw-256px-384px)/2)] lg:mx-auto flex flex-col w-fit">
                 {posts.map((item) => (
                     <PostText key={item.post_id} postData={item} />
                 ))}

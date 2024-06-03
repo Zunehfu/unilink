@@ -1,8 +1,7 @@
-import { useContext } from "react";
-import { ProfileContext } from "../contexts/ProfileContext";
+import { useProfile } from "../hooks/useProfile";
 
 export default function SearchResultCard({ item, roundTop, roundBottom }) {
-    const { setUserId_profile } = useContext(ProfileContext);
+    const setProfile = useProfile();
     return (
         <>
             <div
@@ -12,7 +11,7 @@ export default function SearchResultCard({ item, roundTop, roundBottom }) {
                     borderBottomLeftRadius: roundBottom ? "16px" : "0px",
                     borderBottomRightRadius: roundBottom ? "16px" : "0px",
                 }}
-                onClick={() => setUserId_profile(item.user_id)}
+                onClick={() => setProfile(item.user_id)}
                 className="bg-white h-12 flex hover:bg-green-100 cursor-pointer"
             >
                 <div className="ml-1 w-12 flex justify-center items-center">

@@ -1,11 +1,22 @@
-import React from "react";
+import ProfilePicture from "./ProfilePicture";
 
 export default function CommentCard({ commentData }) {
+    console.log({ commentData });
     return (
-        <div className="leading-4 text-sm rounded-xl p-1 bg-green-50 mt-1 mb-1 w-[360px] h-fit break-words">
-            <small className="text-blue-800">{commentData.user_id}</small>
-            <br />
-            {commentData.content}
+        <div className="text-white text-sm rounded-xl p-2 bg-black w-full h-fit break-words">
+            <div className="flex justify-between">
+                <div className="flex">
+                    <ProfilePicture size="30px" />
+                    <div className="text-xs font-[Lexend] ml-1">
+                        <div className="text-sm h-4">Deneth Priyadarshana</div>
+                        <div className="text-xs underline text-gray-400">
+                            (@deneth.official)
+                        </div>
+                    </div>
+                </div>
+                <div className="text-xs">15/5/2024</div>
+            </div>
+            <div className="mt-1 ">{commentData.content}</div>
         </div>
     );
 }

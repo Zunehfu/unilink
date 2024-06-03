@@ -18,7 +18,7 @@ export default function Footer() {
     }
     return (
         <>
-            <div className="z-10 rounded-t-[24px] text-white justify-around flex fixed bottom-0 left-0 bg-dark right-0 h-12">
+            <div className="md:hidden z-10 rounded-t-[24px] text-white justify-around flex fixed bottom-0 left-0 bg-dark right-0 h-12">
                 <div
                     onClick={(e) => handleClick(0)}
                     className="flex justify-center items-center cursor-pointer"

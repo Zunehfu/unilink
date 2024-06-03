@@ -8,6 +8,16 @@
 }
 
 @font-face {
+    font-family: Neue;
+    src: url("./fonts/NeueMontreal-Regular.otf");
+}
+
+@font-face {
+    font-family: Raspberry;
+    src: url("./fonts/Raspberry-Candy-BF6654561356c85.otf");
+}
+
+@font-face {
     font-family: Aptos-l;
     src: url("./fonts/aptos-light.ttf");
 }
@@ -36,6 +46,7 @@ textarea:focus {
 
 ::-webkit-scrollbar {
     width: 3px;
+    height: 3px;
 }
 ::-webkit-scrollbar-track {
     display: none;

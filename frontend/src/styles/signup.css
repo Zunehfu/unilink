@@ -1,0 +1,89 @@
+.spotlight {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.7) 15%,
+        rgba(255, 255, 255, 0.4) 40%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: moveLuminousEffect 30s infinite forwards linear;
+}
+
+@keyframes moveLuminousEffect {
+    0% {
+        transform: translateX(0) translateY(-20%);
+    }
+    8.33% {
+        transform: translateX(0) translateY(-30%);
+    }
+    16.67% {
+        transform: translateX(-5%) translateY(-45%); /* corner*/
+    }
+    25% {
+        transform: translateX(-20%) translateY(-50%);
+    }
+    33.33% {
+        transform: translateX(-30%) translateY(-50%);
+    }
+    41.67% {
+        transform: translateX(-45%) translateY(-45%); /*corner */
+    }
+    50% {
+        transform: translateX(-50%) translateY(-30%);
+    }
+    58.33% {
+        transform: translateX(-50%) translateY(-20%);
+    }
+    66.67% {
+        transform: translateX(-45%) translateY(-5%); /* corner*/
+    }
+    75% {
+        transform: translateX(-30%) translateY(0);
+    }
+    83.33% {
+        transform: translateX(-20%) translateY(0);
+    }
+    91.66% {
+        transform: translateX(-5%) translateY(-5%); /*cornder*/
+    }
+    100% {
+        transform: translateX(0) translateY(-20%);
+    }
+}
+
+.row1 {
+    position: relative;
+}
+
+.text-container {
+    margin-left: 20px;
+    border: solid 1px red;
+    font-family: Neue;
+    font-size: 10vw;
+    line-height: 10vw;
+    width: 100%;
+    max-width: 380px;
+    /* border: solid red 1px; */
+}
+
+.social-network {
+    position: relative;
+    display: block;
+}
+
+.social-network span {
+    background-color: black;
+    color: white;
+}
+
+.just-for {
+    display: block;
+}
+.students {
+    /* font-style: italic; */
+}

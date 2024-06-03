@@ -45,7 +45,7 @@ const addPost = async (req, res, next) => {
     }
 };
 
-/*This query should me modified! [Post filtering algorithm]*/
+/*This query should be modified! [Post filtering algorithm]*/
 const get_posts_prepared_stmt = `
 SELECT 
     posts.*, 

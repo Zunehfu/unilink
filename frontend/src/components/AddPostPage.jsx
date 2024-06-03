@@ -1,21 +1,87 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { TabContext } from "../contexts/TabContext";
 import { usePfetch } from "../hooks/usePfetch";
 import SmallSpinner from "./SmallSpinner";
 import Err from "../utils/errClass";
 import { toast } from "sonner";
+import { MentionContext } from "../contexts/MentionContext";
+import { Editor, EditorState, ContentState, convertFromHTML } from "draft-js";
+import { stateToHTML } from "draft-js-export-html";
 
+function findWordAtIndex(str, i) {
+    if (i < 0 || i >= str.length) return null;
+
+    let s = i;
+    let e = i;
+
+    while (s >= 0 && !/\s/.test(str[s])) s--;
+    while (e < str.length && !/\s/.test(str[e])) e++;
+
+    return str.slice(s + 1, e);
+}
+function wrapAndReplaceWordAtIndex(text1, text2, index, replacementWord) {
+    // Find the word and its positions at the specified index in text1
+    const { word, startPos, endPos } = findWordAtIndex(text1, index);
+    if (!word) return text2;
+
+    // Create the replacement word wrapped in <u> tags
+    const wrappedWord = `<u>${replacementWord}</u>`;
+
+    // Escape special characters in the word to replace for use in regex
+    const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    // Create a regex to match the exact word in text2
+    const regex = new RegExp(`(${escapedWord})`);
+
+    // Replace the exact occurrence in text2 with the wrapped replacement word
+    return text2.replace(regex, wrappedWord);
+}
 export default function AddPostPage() {
-    const pfetch = usePfetch();
+    const { mentionStatus, setMentionStatus, setMention, mention } =
+        useContext(MentionContext);
     const { setTab } = useContext(TabContext);
+    const pfetch = usePfetch();
+
+    const latestContent = useRef(null);
+    const latestMentionStatus = useRef(mentionStatus);
+    const latestCaretPos = useRef(null);
+
     const [content, setContent] = useState("");
     const [hideme, setHideme] = useState(false);
     const [visibility, setVisibility] = useState(0);
     const [loading, setLoading] = useState(false);
 
+    const [editorState, setEditorState] = useState(() => {
+        const html = "@ d <u>@bold</u>";
+        const blocksFromHTML = convertFromHTML(html);
+        const contentState = ContentState.createFromBlockArray(
+            blocksFromHTML.contentBlocks,
+            blocksFromHTML.entityMap
+        );
+        return EditorState.createWithContent(contentState);
+    });
+
+    const handleEditorChange = (newState) => {
+        setEditorState(newState);
+        latestContent.current = newState.getCurrentContent();
+        const content = latestContent.current.getPlainText();
+        if (!content) return;
+        const offset = newState.getSelection().getStartOffset();
+        const currentWord = findWordAtIndex(content, offset - 1) || "";
+
+        if (currentWord.startsWith("@")) {
+            if (latestMentionStatus.current != -1) {
+                setMentionStatus(-1);
+                latestCaretPos.current = offset;
+            }
+            const search = currentWord.substring(1);
+            setMention(search);
+        } else if (latestMentionStatus.current != null) setMentionStatus(null);
+    };
+
     async function handleSubmission() {
         try {
-            const data = await pfetch("/posts", {
+            await pfetch("/posts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -35,20 +101,42 @@ export default function AddPostPage() {
         }
     }
 
+    useEffect(() => {
+        latestMentionStatus.current = mentionStatus;
+        console.log({ mentionStatus });
+        if (mentionStatus && mentionStatus != -1) {
+            const newhtml = wrapAndReplaceWordAtIndex(
+                latestContent.current.getPlainText(),
+                stateToHTML(latestContent.current),
+                latestCaretPos.current - 1,
+                mentionStatus.username
+            );
+            console.log(newhtml);
+            setMentionStatus(null);
+        }
+    }, [mentionStatus]);
+
+    useEffect(() => {
+        return () => {
+            setMentionStatus(null);
+        };
+    }, []);
+
     return (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-10 backdrop-blur-sm">
-            <div className="rounded-lg w-[400px] bg-gray-300 p-4 ">
+        <div className="text-white fixed top-0 left-0 w-full h-full flex items-center justify-center ">
+            <div className=" rounded-xl w-[400px] bg-dark p-4 ">
                 <label htmlFor="yo">What do you have in your mind?</label>
                 <i
                     onClick={() => setTab(0)}
-                    className="fa-solid fa-xmark relative left-[130px] top-[-10px] cursor-pointer hover:text-green-500"
+                    className="fa-solid fa-xmark relative left-[130px] top-[-10px] cursor-pointer hover:text-emerald-500"
                 ></i>
                 <br />
-                <textarea
-                    className="rounded-lg  resize-none w-full h-60 p-2"
-                    value={content}
-                    onChange={(e) => !loading && setContent(e.target.value)}
-                ></textarea>
+                <div className="text-black bg-white max-h-48 overflow-scroll rounded-lg">
+                    <Editor
+                        editorState={editorState}
+                        onChange={handleEditorChange}
+                    />
+                </div>
                 <br />
                 <div>Wanna express freely?</div>
                 <label htmlFor="hideme">Hide me </label>
@@ -101,7 +189,7 @@ export default function AddPostPage() {
                 </label>
                 <br />
                 <button
-                    className="rounded-xl bg-green-300 w-20 h-8 flex justify-center items-center"
+                    className="mt-2 rounded-xl bg-sky-500 w-20 h-8 flex justify-center items-center"
                     onClick={() => {
                         if (!loading) {
                             setLoading(true);

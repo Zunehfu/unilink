@@ -77,6 +77,8 @@ export default function PostText({ postData }) {
             <div className="w-96 my-2 rounded-xl bg-dark text-white px-1">
                 <PostDetails
                     user_id={postData.user_id}
+                    username={postData.username}
+                    name={postData.name}
                     created_at={postData.created_at}
                 />
                 <hr />

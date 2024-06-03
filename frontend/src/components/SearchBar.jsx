@@ -2,6 +2,7 @@ import anime from "animejs";
 import { useEffect, useState } from "react";
 import { usePfetch } from "../hooks/usePfetch";
 import { Bars } from "react-loader-spinner";
+import Err from "../utils/errClass";
 
 export default function SearchBar({ setSearchResults }) {
     const pfetch = usePfetch();
@@ -21,7 +22,7 @@ export default function SearchBar({ setSearchResults }) {
 
                 setSearchResults(data);
             } catch (err) {
-                if (err.code == "AUTH_FAIL") return navigate("/signin");
+                if (!(err instanceof Err)) console.err(err);
             } finally {
                 setSearching(false);
             }
