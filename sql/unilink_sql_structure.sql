@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 14, 2024 at 04:58 PM
+-- Generation Time: Jun 04, 2024 at 10:34 AM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -35,6 +35,65 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `created_at` timestamp NOT NULL,
   `content` varchar(512) NOT NULL,
   PRIMARY KEY (`comment_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `likes`
+--
+
+DROP TABLE IF EXISTS `likes`;
+CREATE TABLE IF NOT EXISTS `likes` (
+  `like_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `post_id` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `created_at` timestamp NOT NULL,
+  PRIMARY KEY (`like_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `notification_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `from_user_id` int UNSIGNED NOT NULL,
+  `created_at` timestamp NOT NULL,
+  `viewed` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`notification_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pals`
+--
+
+DROP TABLE IF EXISTS `pals`;
+CREATE TABLE IF NOT EXISTS `pals` (
+  `pal_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id_from` int UNSIGNED NOT NULL,
+  `user_id_to` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`pal_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pal_proposals`
+--
+
+DROP TABLE IF EXISTS `pal_proposals`;
+CREATE TABLE IF NOT EXISTS `pal_proposals` (
+  `proposal_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id_from` int UNSIGNED NOT NULL,
+  `user_id_to` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`proposal_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
