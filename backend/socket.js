@@ -62,6 +62,20 @@ const initializeSocket = (httpServer) => {
                     post_id: data.post_id,
                 });
         });
+        socket.on("on-add-comment", (data) => {
+            socket
+                .to(getUsersWithPostId(data.post_id))
+                .emit("on-user-add-comment", {
+                    post_id: data.post_id,
+                });
+        });
+        socket.on("on-remove-comment", (data) => {
+            socket
+                .to(getUsersWithPostId(data.post_id))
+                .emit("on-user-remove-comment", {
+                    post_id: data.post_id,
+                });
+        });
 
         // Set currently loaded posts of a particular user inside the #users obj
         socket.on("on-posts-loaded", (data) => {

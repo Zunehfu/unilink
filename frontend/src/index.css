@@ -3,23 +3,8 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: Aptos;
-    src: url("./fonts/aptos.ttf");
-}
-
-@font-face {
     font-family: Neue;
     src: url("./fonts/NeueMontreal-Regular.otf");
-}
-
-@font-face {
-    font-family: Raspberry;
-    src: url("./fonts/Raspberry-Candy-BF6654561356c85.otf");
-}
-
-@font-face {
-    font-family: Aptos-l;
-    src: url("./fonts/aptos-light.ttf");
 }
 
 @font-face {

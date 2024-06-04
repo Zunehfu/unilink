@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export default function PostDescription() {
-    const [height, setHeight] = useState(36); //
+    const [height, setHeight] = useState(36);
     const [toggle, setToggle] = useState(false); // Initial toggle state
 
     const handleClick = () => {

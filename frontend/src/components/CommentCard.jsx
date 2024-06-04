@@ -1,20 +1,27 @@
+import { useProfile } from "../hooks/useProfile";
 import ProfilePicture from "./ProfilePicture";
+import moment from "moment";
 
 export default function CommentCard({ commentData }) {
-    console.log({ commentData });
+    const setProfile = useProfile();
     return (
         <div className="text-white text-sm rounded-xl p-2 bg-black w-full h-fit break-words">
             <div className="flex justify-between">
-                <div className="flex">
+                <div
+                    onClick={() => setProfile(commentData.user_id)}
+                    className="flex cursor-pointer"
+                >
                     <ProfilePicture size="30px" />
                     <div className="text-xs font-[Lexend] ml-1">
-                        <div className="text-sm h-4">Deneth Priyadarshana</div>
+                        <div className="text-sm h-4">{commentData.name}</div>
                         <div className="text-xs underline text-gray-400">
-                            (@deneth.official)
+                            (@{commentData.username})
                         </div>
                     </div>
                 </div>
-                <div className="text-xs">15/5/2024</div>
+                <div className="text-xs">
+                    {moment(commentData.created_at).format("D/M/YYYY")}
+                </div>
             </div>
             <div className="mt-1 ">{commentData.content}</div>
         </div>

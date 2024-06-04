@@ -6,6 +6,11 @@ export default {
             colors: {
                 dark: "#1E1F22",
             },
+            fonts: {
+                lexend: "Lexend",
+                futura: "Futura",
+                neue: "Neue",
+            },
         },
     },
     plugins: [],

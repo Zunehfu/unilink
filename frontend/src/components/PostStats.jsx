@@ -5,6 +5,7 @@ import "../styles/like-btn.css";
 import "../styles/comment-btn.css";
 import Err from "../utils/errClass";
 import { socket } from "../services/socket";
+import SmallSpinner from "./SmallSpinner";
 
 export default function PostStats({
     post_id,
@@ -12,27 +13,36 @@ export default function PostStats({
     liked,
     setLiked,
     setLike_count,
+    setComment_count,
     comment_count,
     like_count,
 }) {
     const pfetch = usePfetch();
     const [content, setContent] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    async function handleSubmission() {
-        try {
-            await pfetch("/posts/" + post_id + "/comments", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ content }),
-            });
-        } catch (err) {
-            if (err.code == "AUTH_FAIL") return navigate("/signin");
-        } finally {
-            setContent("");
+    function handleSubmission() {
+        async function postComment() {
+            try {
+                await pfetch("/posts/" + post_id + "/comments", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ content }),
+                });
+                setComment_count(comment_count + 1);
+            } catch (err) {
+                if (err.code == "AUTH_FAIL") return navigate("/signin");
+            } finally {
+                setContent("");
+                setLoading(false);
+            }
         }
+
+        setLoading(true);
+        postComment();
     }
 
     async function handleLikeButton(e) {
@@ -72,7 +82,7 @@ export default function PostStats({
                 <div>
                     <div title="Like" className="heart-container">
                         <input
-                            id="Give-It-An-Id"
+                            id={"like_btn_" + post_id}
                             className="checkbox"
                             type="checkbox"
                             checked={liked}
@@ -118,39 +128,46 @@ export default function PostStats({
                 ></i>
                 <small>{comment_count}</small>
             </div>
-            <div className="flex relative">
+            <div className="flex relative items-center">
                 <input
+                    id={"comment_input_" + post_id}
                     className="p-1 pr-8 rounded bg-black w-56"
                     type="text"
                     value={content}
                     placeholder="Say something..."
                     onChange={(e) => setContent(e.target.value)}
                 />
-                <svg
-                    onClick={handleSubmission}
-                    className="comment-btn"
-                    height="20"
-                    width="20"
-                    viewBox="0 0 32 32"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                    <linearGradient
-                        id="linear-gradient"
-                        gradientUnits="userSpaceOnUse"
-                        x1="5.382"
-                        x2="27.27"
-                        y1="27.1"
-                        y2="3.148"
+                {loading ? (
+                    <div className="absolute right-0 scale-50">
+                        <SmallSpinner />
+                    </div>
+                ) : (
+                    <svg
+                        onClick={handleSubmission}
+                        className="comment-btn"
+                        height="20"
+                        width="20"
+                        viewBox="0 0 32 32"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
                     >
-                        <stop offset="0" stopColor="#00a1e2" />
-                        <stop offset="1" stopColor="#00e0a5" />
-                    </linearGradient>
-                    <path
-                        d="m30.707 1.293a1 1 0 0 0 -1.073-.224l-28 11a1 1 0 0 0 -.164 1.779l8 5a1 1 0 0 0 .977.047l5.317-2.659-2.659 5.317a1 1 0 0 0 .047.977l5 8a1 1 0 0 0 .848.47h.092a1 1 0 0 0 .839-.631l11-28a1 1 0 0 0 -.224-1.076z"
-                        fill="url(#linear-gradient)"
-                    />
-                </svg>
+                        <linearGradient
+                            id="linear-gradient"
+                            gradientUnits="userSpaceOnUse"
+                            x1="5.382"
+                            x2="27.27"
+                            y1="27.1"
+                            y2="3.148"
+                        >
+                            <stop offset="0" stopColor="#00a1e2" />
+                            <stop offset="1" stopColor="#00e0a5" />
+                        </linearGradient>
+                        <path
+                            d="m30.707 1.293a1 1 0 0 0 -1.073-.224l-28 11a1 1 0 0 0 -.164 1.779l8 5a1 1 0 0 0 .977.047l5.317-2.659-2.659 5.317a1 1 0 0 0 .047.977l5 8a1 1 0 0 0 .848.47h.092a1 1 0 0 0 .839-.631l11-28a1 1 0 0 0 -.224-1.076z"
+                            fill="url(#linear-gradient)"
+                        />
+                    </svg>
+                )}
             </div>
         </div>
     );

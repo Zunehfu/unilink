@@ -147,7 +147,12 @@ const addComment = async (req, res, next) => {
     }
 };
 
-const get_comments_prepared_stmt = `SELECT * FROM comments WHERE post_id = ? LIMIT 5 OFFSET ?`;
+const get_comments_prepared_stmt = `SELECT comments.*, users.username, users.name 
+FROM comments 
+JOIN users 
+ON comments.user_id = users.user_id
+WHERE comments.post_id = ? 
+LIMIT 5 OFFSET ?;`;
 
 const getComments = async (req, res, next) => {
     try {
