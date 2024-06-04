@@ -17,7 +17,7 @@ A social networking platform for university students
 3. Run the cmd **npm start**.
 4. Open terminal/cmd in _frontend_ dir.
 5. Run the cmd **npm run dev**.
-6. App will be served on [http://localhost:5173].
+6. App will be served on [http://localhost:5173](http://localhost:5173).
 
 ## Additional notes
 
