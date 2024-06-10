@@ -14,6 +14,8 @@ const addPost = async (req, res, next) => {
     try {
         const timestamp = new Date();
 
+        console.log(req.body);
+
         const [result] = await pool.query(insert_post_prepared_stmt, [
             req.user.user_id,
             req.body.hideme,

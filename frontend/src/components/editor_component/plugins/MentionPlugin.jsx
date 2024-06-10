@@ -61,11 +61,13 @@ export function MentionPlugin() {
             ) {
                 const [node] = selection.getNodes();
                 currentNode.current = node;
+                if (node.getType() != "text") return;
 
                 const offset = selection.anchor.offset;
 
                 const content = node.getTextContent();
                 if (!content) return;
+
                 const wordObj = findWordAtIndex(content, offset - 1);
 
                 const currentWord = wordObj.word;

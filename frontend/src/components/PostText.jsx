@@ -2,8 +2,9 @@ import PostDetails from "./PostDetails";
 import PostStats from "./PostStats";
 import PostContent from "./PostContent";
 import Comments from "./Comments";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { socket } from "../services/socket";
+import CommentInput from "./CommentInput";
 
 export default function PostText({ posts, setPosts, post_index }) {
     const [commentsVisibility, setCommentsVisibility] = useState(false);
@@ -80,15 +81,14 @@ export default function PostText({ posts, setPosts, post_index }) {
                     name={posts[post_index].name}
                     created_at={posts[post_index].created_at}
                 />
-                <hr />
                 <PostContent content={posts[post_index].content} />
-                <hr />
                 <PostStats
                     posts={posts}
                     post_index={post_index}
                     setPosts={setPosts}
                     toggleCommentsVisibility={toggleCommentsVisibility}
                 />
+                <CommentInput posts={posts} post_index={post_index} />
             </div>
             {commentsVisibility && (
                 <Comments

@@ -5,11 +5,7 @@ export default {
         extend: {
             colors: {
                 dark: "#1E1F22",
-            },
-            fonts: {
-                lexend: "Lexend",
-                futura: "Futura",
-                neue: "Neue",
+                dark2: "rgb(26,27,29)",
             },
         },
     },

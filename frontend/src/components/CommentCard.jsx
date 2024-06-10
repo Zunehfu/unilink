@@ -1,6 +1,7 @@
 import { useProfile } from "../hooks/useProfile";
 import ProfilePicture from "./ProfilePicture";
 import moment from "moment";
+import EditorReadOnly from "./editor_component/EditorReadOnly";
 
 export default function CommentCard({ commentData }) {
     const setProfile = useProfile();
@@ -23,7 +24,10 @@ export default function CommentCard({ commentData }) {
                     {moment(commentData.created_at).format("D/M/YYYY")}
                 </div>
             </div>
-            <div className="mt-1 ">{commentData.content}</div>
+            <div className="mt-1 ">
+                {console.log(commentData.content)}
+                <EditorReadOnly initialEditorState={commentData.content} />
+            </div>
         </div>
     );
 }

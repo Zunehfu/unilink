@@ -1,8 +1,6 @@
-import LocomotiveScroll from "locomotive-scroll";
 import "../styles/profile.css";
 
 export default function PhotosLayout({}) {
-    new LocomotiveScroll();
     return (
         <div className="grid-wrapper">
             <div className="tall ">

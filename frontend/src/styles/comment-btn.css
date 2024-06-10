@@ -1,10 +1,12 @@
 .comment-btn {
+    transition: transform 0.3s ease;
+}
+
+.comment-btn-container {
     cursor: pointer;
     position: absolute;
     right: 8px;
-    top: 6px;
-
-    transition: transform 0.3s ease;
+    bottom: 6px;
 }
 
 .comment-btn:hover {

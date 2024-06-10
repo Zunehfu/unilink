@@ -30,7 +30,6 @@ import Err from "../utils/errClass";
 
 // socket
 import { socket } from "../services/socket";
-import Editor from "./editor/Editor";
 
 export default function MainComponent() {
     const pfetch = usePfetch();

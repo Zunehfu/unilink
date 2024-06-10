@@ -33,9 +33,7 @@ export default function Comments({
         }
     }
     useEffect(() => {
-        console.log("a");
         if (comments.length == 0) {
-            console.log("b");
             setLoading(true);
             fetchComments();
         }

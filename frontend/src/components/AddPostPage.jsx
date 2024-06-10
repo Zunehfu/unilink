@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { TabContext } from "../contexts/TabContext";
 import { usePfetch } from "../hooks/usePfetch";
 import SmallSpinner from "./SmallSpinner";
-import Editor from "./editor/Editor";
+import Editor from "./editor_component/Editor";
 
 import Err from "../utils/errClass";
 import { toast } from "sonner";
@@ -11,7 +11,7 @@ export default function AddPostPage() {
     const { setTab } = useContext(TabContext);
     const pfetch = usePfetch();
 
-    const [content, setContent] = useState("");
+    const [editorState, setEditorState] = useState();
     const [hideme, setHideme] = useState(false);
     const [visibility, setVisibility] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -23,7 +23,11 @@ export default function AddPostPage() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ content, hideme, visibility }),
+                body: JSON.stringify({
+                    content: JSON.stringify(editorState),
+                    hideme,
+                    visibility,
+                }),
             });
         } catch (err) {
             if (!(err instanceof Err)) {
@@ -31,7 +35,6 @@ export default function AddPostPage() {
                 toast.error("Unexpected error occured");
             }
         } finally {
-            setContent("");
             setHideme(false);
             setVisibility(0);
             setLoading(false);
@@ -46,7 +49,7 @@ export default function AddPostPage() {
     }
 
     function onEditorStateChanged(editorState) {
-        console.log(JSON.stringify(editorState));
+        setEditorState(editorState);
     }
 
     return (

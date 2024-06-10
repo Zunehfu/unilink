@@ -17,7 +17,7 @@ export class MentionNode extends TextNode {
     createDOM(config) {
         const dom = super.createDOM(config);
         dom.className =
-            "text-emerald-900 font-semibold bg-emerald-500 rounded-md";
+            "text-emerald-900 font-semibold bg-emerald-500 rounded-md cursor-pointer";
         dom.innerText = this.__text;
         return dom;
     }
