@@ -5,44 +5,58 @@ import Comments from "./Comments";
 import { useEffect, useRef, useState } from "react";
 import { socket } from "../services/socket";
 
-export default function PostText({ postData }) {
-    const [liked, setLiked] = useState(postData.liked);
-    const [like_count, setLike_count] = useState(postData.like_count);
-    const [comment_count, setComment_count] = useState(postData.comment_count);
+export default function PostText({ posts, setPosts, post_index }) {
     const [commentsVisibility, setCommentsVisibility] = useState(false);
     const [comments, setComments] = useState([]);
-
-    const lref = useRef(like_count);
-    const cref = useRef(comment_count);
 
     function toggleCommentsVisibility() {
         setCommentsVisibility(!commentsVisibility);
     }
 
     useEffect(() => {
-        lref.current = like_count;
-    }, [like_count]);
-
-    useEffect(() => {
-        cref.current = comment_count;
-    }, [comment_count]);
-
-    useEffect(() => {
         function handleOnUserAddLike(data) {
-            if (postData.post_id == data.post_id)
-                setLike_count(lref.current + 1);
+            if (posts[post_index].post_id == data.post_id) {
+                setPosts(
+                    posts.map((post, i) =>
+                        i === post_index
+                            ? { ...post, like_count: post.like_count + 1 }
+                            : post
+                    )
+                );
+            }
         }
         function handleOnUserRemoveLike(data) {
-            if (postData.post_id == data.post_id)
-                setLike_count(lref.current - 1);
+            if (posts[post_index].post_id == data.post_id) {
+                setPosts(
+                    posts.map((post, i) =>
+                        i === post_index
+                            ? { ...post, like_count: post.like_count - 1 }
+                            : post
+                    )
+                );
+            }
         }
         function handleOnUserAddComment(data) {
-            if (postData.post_id == data.post_id)
-                setComment_count(cref.current + 1);
+            if (posts[post_index].post_id == data.post_id) {
+                setPosts(
+                    posts.map((post, i) =>
+                        i === post_index
+                            ? { ...post, comment_count: post.comment_count + 1 }
+                            : post
+                    )
+                );
+            }
         }
         function handleOnUserRemoveComment(data) {
-            if (postData.post_id == data.post_id)
-                setComment_count(cref.current - 1);
+            if (posts[post_index].post_id == data.post_id) {
+                setPosts(
+                    posts.map((post, i) =>
+                        i === post_index
+                            ? { ...post, comment_count: post.comment_count - 1 }
+                            : post
+                    )
+                );
+            }
         }
 
         socket.on("on-user-add-like", handleOnUserAddLike);
@@ -61,32 +75,27 @@ export default function PostText({ postData }) {
         <>
             <div className="w-96 my-2 rounded-xl bg-dark text-white px-1">
                 <PostDetails
-                    user_id={postData.user_id}
-                    username={postData.username}
-                    name={postData.name}
-                    created_at={postData.created_at}
+                    user_id={posts[post_index].user_id}
+                    username={posts[post_index].username}
+                    name={posts[post_index].name}
+                    created_at={posts[post_index].created_at}
                 />
                 <hr />
-                <PostContent content={postData.content} />
+                <PostContent content={posts[post_index].content} />
                 <hr />
                 <PostStats
-                    post_id={postData.post_id}
-                    setLiked={setLiked}
-                    comments={comments}
-                    liked={liked}
-                    like_count={like_count}
-                    setLike_count={setLike_count}
-                    setComment_count={setComment_count}
-                    comment_count={comment_count}
+                    posts={posts}
+                    post_index={post_index}
+                    setPosts={setPosts}
                     toggleCommentsVisibility={toggleCommentsVisibility}
                 />
             </div>
             {commentsVisibility && (
                 <Comments
+                    post_id={posts[post_index].post_id}
                     comments={comments}
-                    post_id={postData.post_id}
                     setComments={setComments}
-                    comment_count={comment_count}
+                    comment_count={posts[post_index].comment_count}
                 />
             )}
         </>

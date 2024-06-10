@@ -85,6 +85,8 @@ const getPosts = async (req, res, next) => {
                 }))
             )
         );
+
+        console.log(posts);
     } catch (err) {
         if (err instanceof Err) {
             res.json(response(false, err.message, {}));
@@ -180,13 +182,13 @@ const getComments = async (req, res, next) => {
     }
 };
 
-const add_like_stmt = `INSERT IGNORE INTO likes (post_id, user_id, created_at)
+const add_like_stmt = `
+INSERT INTO likes (post_id, user_id, created_at)
 VALUES (?, ?, ?);
 `;
 
 const addLike = async (req, res, next) => {
     try {
-        console.log("hello");
         await pool.query(add_like_stmt, [
             req.params.post_id,
             req.user.user_id,
@@ -195,6 +197,7 @@ const addLike = async (req, res, next) => {
 
         res.json(response(true, "ADD_LIKE", {}));
     } catch (err) {
+        console.log(err);
         if (err instanceof Err) {
             res.json(response(false, err.message, {}));
         } else {

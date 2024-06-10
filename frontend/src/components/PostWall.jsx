@@ -74,8 +74,13 @@ export default function PostWall({ posts, setPosts, scrollref }) {
         <>
             <Header />
             <div className="mx-auto md:ml-auto md:mr-[calc((100vw-256px-384px)/2)] lg:mx-auto flex flex-col w-fit">
-                {posts.map((item) => (
-                    <PostText key={item.post_id} postData={item} />
+                {posts.map((post, i) => (
+                    <PostText
+                        key={post.post_id}
+                        post_index={i}
+                        posts={posts}
+                        setPosts={setPosts}
+                    />
                 ))}
                 {loading && <SmallSpinner />}
             </div>

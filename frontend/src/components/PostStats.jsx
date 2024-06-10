@@ -1,40 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePfetch } from "../hooks/usePfetch";
-import { useNavigate } from "react-router-dom";
 import "../styles/like-btn.css";
 import "../styles/comment-btn.css";
 import Err from "../utils/errClass";
 import { socket } from "../services/socket";
 import SmallSpinner from "./SmallSpinner";
+import { toast } from "sonner";
 
 export default function PostStats({
-    post_id,
     toggleCommentsVisibility,
-    liked,
-    setLiked,
-    setLike_count,
-    setComment_count,
-    comment_count,
-    like_count,
+    posts,
+    post_index,
+    setPosts,
 }) {
     const pfetch = usePfetch();
     const [content, setContent] = useState("");
+    const [liked, setLiked] = useState(posts[post_index].liked);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
 
     function handleSubmission() {
         async function postComment() {
             try {
-                await pfetch("/posts/" + post_id + "/comments", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ content }),
+                await pfetch(
+                    "/posts/" + posts[post_index].post_id + "/comments",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ content }),
+                    }
+                );
+                socket.emit("on-add-comment", {
+                    post_id: posts[post_index].post_id,
                 });
-                setComment_count(comment_count + 1);
+                setPosts(
+                    posts.map((post, i) =>
+                        i === post_index
+                            ? { ...post, comment_count: post.comment_count + 1 }
+                            : post
+                    )
+                );
             } catch (err) {
-                if (err.code == "AUTH_FAIL") return navigate("/signin");
+                if (!(err instanceof Err)) {
+                    console.error(err);
+                    toast.error("Something went wrong");
+                }
             } finally {
                 setContent("");
                 setLoading(false);
@@ -46,32 +57,38 @@ export default function PostStats({
     }
 
     async function handleLikeButton(e) {
-        setLiked(e.target.checked);
-        if (e.target.checked) {
-            try {
-                await pfetch("/posts/" + post_id + "/likes", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                socket.emit("on-add-like", { post_id: post_id });
-                setLike_count(like_count + 1);
-            } catch (err) {
-                if (!(err instanceof Err)) console.error(err);
+        const isChecked = e.target.checked;
+        const updatedPosts = posts.map((post, i) => {
+            if (i === post_index) {
+                return {
+                    ...post,
+                    liked: isChecked,
+                    like_count: isChecked
+                        ? post.like_count + 1
+                        : post.like_count - 1,
+                };
             }
-        } else {
-            try {
-                await pfetch("/posts/" + post_id + "/likes", {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                socket.emit("on-remove-like", { post_id: post_id });
-                setLike_count(like_count - 1);
-            } catch (err) {
-                if (!(err instanceof Err)) console.error(err);
+            return post;
+        });
+
+        setPosts(updatedPosts);
+
+        try {
+            await pfetch("/posts/" + posts[post_index].post_id + "/likes", {
+                method: isChecked ? "POST" : "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            socket.emit(isChecked ? "on-add-like" : "on-remove-like", {
+                post_id: posts[post_index].post_id,
+            });
+        } catch (err) {
+            if (!(err instanceof Err)) {
+                console.error(err);
+                toast.error("Something went wrong");
+                setPosts(posts);
             }
         }
     }
@@ -82,10 +99,10 @@ export default function PostStats({
                 <div>
                     <div title="Like" className="heart-container">
                         <input
-                            id={"like_btn_" + post_id}
+                            id={"like_btn_" + posts[post_index].post_id}
                             className="checkbox"
                             type="checkbox"
-                            checked={liked}
+                            checked={posts[post_index].liked}
                             onChange={(e) => handleLikeButton(e)}
                         />
                         <div className="svg-container">
@@ -119,18 +136,18 @@ export default function PostStats({
                         </div>
                     </div>
                 </div>
-                <small>{like_count}</small>
+                <small>{posts[post_index].like_count}</small>
             </div>
             <div className="flex">
                 <i
                     onClick={toggleCommentsVisibility}
                     className="mr-2 py-[2px] fa-regular fa-comment cursor-pointer scale-125"
                 ></i>
-                <small>{comment_count}</small>
+                <small>{posts[post_index].comment_count}</small>
             </div>
             <div className="flex relative items-center">
                 <input
-                    id={"comment_input_" + post_id}
+                    id={"comment_input_" + posts[post_index].post_id}
                     className="p-1 pr-8 rounded bg-black w-56"
                     type="text"
                     value={content}

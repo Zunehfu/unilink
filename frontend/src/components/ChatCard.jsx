@@ -15,7 +15,9 @@ export default function ChatCard() {
                         (@deneth.official)
                     </span>
                 </div>
-                <div className="text-xs ml-2">Bro this is insanely good?</div>
+                <div className="text-xs ml-2">
+                    dkmwlkanflanwongogawgagnoawngobaowgbaigwasnfoiwnafoq
+                </div>
             </div>
         </div>
     );

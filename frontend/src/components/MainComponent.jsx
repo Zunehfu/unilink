@@ -1,6 +1,5 @@
 // react
 import { useEffect, useState, useRef, useContext } from "react";
-
 // components
 import Home from "./Home";
 import AddPostPage from "./AddPostPage";
@@ -31,13 +30,14 @@ import Err from "../utils/errClass";
 
 // socket
 import { socket } from "../services/socket";
+import Editor from "./editor/Editor";
 
 export default function MainComponent() {
     const pfetch = usePfetch();
 
     const { tab } = useContext(TabContext);
     const { userId_profile, setPalStatus } = useContext(ProfileContext);
-    const { setUserData, userData } = useContext(UserDataContext);
+    const { setUserData } = useContext(UserDataContext);
     const { mentionStatus } = useContext(MentionContext);
 
     const [loading, setLoading] = useState(true);
@@ -167,6 +167,7 @@ export default function MainComponent() {
             ) : (
                 <div>
                     <Toaster richColors />
+                    {/* <Editor /> */}
                     <Footer />
                     {tab == 0 && (
                         <Home
