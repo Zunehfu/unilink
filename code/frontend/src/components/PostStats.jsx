@@ -4,6 +4,7 @@ import "../styles/like-btn.css";
 import Err from "../utils/errClass";
 import { socket } from "../services/socket";
 import { toast } from "sonner";
+import { handleKeyCommand } from "draft-js/lib/RichTextEditorUtil";
 
 export default function PostStats({
     toggleCommentsVisibility,
@@ -12,6 +13,11 @@ export default function PostStats({
     setPosts,
 }) {
     const pfetch = usePfetch();
+
+    function handleShare() {
+        toast.info("Link copied to clipbaord.", { position: "top-right" });
+        navigator.clipboard.writeText("posturl");
+    }
     async function handleLikeButton(e) {
         const isChecked = e.target.checked;
         const updatedPosts = posts.map((post, i) => {
@@ -43,7 +49,7 @@ export default function PostStats({
         } catch (err) {
             if (!(err instanceof Err)) {
                 console.error(err);
-                toast.error("Something went wrong");
+                toast.error("Something went wrong.");
                 setPosts(posts);
             }
         }
@@ -99,14 +105,18 @@ export default function PostStats({
                     <div className="flex items-center gap-2">
                         <i
                             onClick={toggleCommentsVisibility}
-                            className="fa-light fa-comment cursor-pointer scale-125"
+                            className="fa-thin fa-comment cursor-pointer scale-125"
                         ></i>
                         <small>{posts[post_index].comment_count}</small>
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <i className="fa-light fa-share cursor-pointer"></i>
-                    <i className="fa-light fa-bookmark cursor-pointer"></i>
+                    <button onClick={handleShare}>
+                        <i className="fa-thin fa-share cursor-pointer scale-110"></i>
+                    </button>
+                    <button>
+                        <i className="fa-thin fa-bookmark cursor-pointer scale-110"></i>
+                    </button>
                 </div>
             </div>
         </>

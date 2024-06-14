@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { TabContext } from "../contexts/TabContext";
 import { usePfetch } from "../hooks/usePfetch";
 import SmallSpinner from "./laoders/SmallSpinner";
-import Editor from "./editor_component/Editor";
+import Editor from "./editor/Editor";
 
 import Err from "../utils/errClass";
 import { toast } from "sonner";

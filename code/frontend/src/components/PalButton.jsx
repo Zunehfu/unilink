@@ -3,7 +3,7 @@ import { ProfileContext } from "../contexts/ProfileContext";
 import { usePalInteractions } from "../hooks/usePalInteractions";
 
 export default function PalButton() {
-    const { palStatus, userId_profile } = useContext(ProfileContext);
+    const { activeProfileData, activeProfile } = useContext(ProfileContext);
 
     const {
         handleAcceptPalProposal,
@@ -11,7 +11,7 @@ export default function PalButton() {
         handleWithdrawPalProposal,
         handleUnpal,
         handleSendPalProposal,
-    } = usePalInteractions(userId_profile);
+    } = usePalInteractions(activeProfile);
 
     <button className="bg-gradient-to-tr  from-indigo-500 via-20% via-sky-500 to-emerald-500  py-1 px-5 absolute right-1/3 rounded-full">
         Be Pals
@@ -19,7 +19,7 @@ export default function PalButton() {
 
     return (
         <>
-            {palStatus == 0 && (
+            {activeProfileData.pal_status == 0 && (
                 <button
                     onClick={handleSendPalProposal}
                     className="bg-gradient-to-tr  from-indigo-500 via-20% via-sky-500 to-emerald-500  py-1 px-5 absolute right-1/3 rounded-full"
@@ -27,7 +27,7 @@ export default function PalButton() {
                     Be Pals
                 </button>
             )}
-            {palStatus == 1 && (
+            {activeProfileData.pal_status == 1 && (
                 <button
                     onClick={handleUnpal}
                     className="bg-gradient-to-tr  from-indigo-500 via-20% via-sky-500 to-emerald-500  py-1 px-5 absolute right-1/3 rounded-full"
@@ -35,7 +35,7 @@ export default function PalButton() {
                     Unpal
                 </button>
             )}
-            {palStatus == 2 && (
+            {activeProfileData.pal_status == 2 && (
                 <div className="absolute right-1/3 ">
                     <button
                         onClick={handleAcceptPalProposal}
@@ -51,7 +51,7 @@ export default function PalButton() {
                     </button>
                 </div>
             )}
-            {palStatus == 3 && (
+            {activeProfileData.pal_status == 3 && (
                 <button
                     onClick={handleWithdrawPalProposal}
                     className="bg-gradient-to-tr  from-indigo-500 via-20% via-sky-500 to-emerald-500  py-1 px-5 absolute right-1/3 rounded-full"

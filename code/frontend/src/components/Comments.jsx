@@ -29,7 +29,10 @@ export default function Comments({
             setComments([...comments, ...data]);
             console.log(data);
         } catch (err) {
-            if (!(err instanceof Err)) toast.error("Something went wrong.");
+            if (!(err instanceof Err)) {
+                console.error(err);
+                toast.error("Something went wrong.");
+            }
         } finally {
             setLoading(false);
         }

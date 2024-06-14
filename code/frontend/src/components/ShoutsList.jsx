@@ -5,7 +5,7 @@ import Err from "../utils/errClass";
 import { ProfileContext } from "../contexts/ProfileContext";
 import SmallSpinner from "./laoders/SmallSpinner";
 export default function ShoutsList() {
-    const { userId_profile } = useContext(ProfileContext);
+    const { activeProfile } = useContext(ProfileContext);
     const scrollRefShouts = useRef();
     const [loading, setLoading] = useState(false);
     const [shoutList, setShoutList] = useState([]);
@@ -15,7 +15,7 @@ export default function ShoutsList() {
         try {
             const data = await pfetch(
                 "/shouts?user_id=" +
-                    userId_profile +
+                    activeProfile +
                     "&from=" +
                     shoutList.length.toString(),
                 {
@@ -30,7 +30,7 @@ export default function ShoutsList() {
         } catch (err) {
             if (!(err instanceof Err)) {
                 console.error(err);
-                toast.error("Something went wrong");
+                toast.error("Something went wrong.");
             }
         } finally {
             setLoading(false);

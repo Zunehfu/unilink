@@ -16,7 +16,6 @@ import Loader from "./laoders/Loader";
 import Notification from "./Notification";
 import MentionPalette from "./MentionPalette";
 import Profile from "./Profile";
-import NewProfile from "./NewProfile";
 
 // libraries
 import Cookies from "js-cookie";
@@ -41,11 +40,10 @@ export default function MainComponent() {
     const pfetch = usePfetch();
 
     const { tab } = useContext(TabContext);
-    const { userId_profile, setPalStatus } = useContext(ProfileContext);
+    const { activeProfile, setActiveProfileData } = useContext(ProfileContext);
     const { setUserData } = useContext(UserDataContext);
     const { mentionStatus } = useContext(MentionContext);
-
-    const userIdProfileRef = useRef(userId_profile);
+    const userIdProfileRef = useRef(activeProfile);
     const scrollref = useRef(null);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -82,8 +80,8 @@ export default function MainComponent() {
     }, []);
 
     useEffect(() => {
-        userIdProfileRef.current = userId_profile;
-    }, [userId_profile]);
+        userIdProfileRef.current = activeProfile;
+    }, [activeProfile]);
 
     useEffect(() => {
         socket.on("connect", () => {
@@ -95,7 +93,11 @@ export default function MainComponent() {
         const handlePalProposalReceive = (data) => {
             console.log(userIdProfileRef.current, data.userData_from.user_id);
             if (userIdProfileRef.current === data.userData_from.user_id)
-                setPalStatus(2);
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: 2,
+                }));
+
             toast(
                 <Notification
                     type="RECIEVE_PAL_PROPOSAL"
@@ -109,17 +111,26 @@ export default function MainComponent() {
         const handleWithdrawReceivedPalProposal = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
-                setPalStatus(0);
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: 0,
+                }));
         };
         const handleBeingUnpaled = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
-                setPalStatus(0);
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: 0,
+                }));
         };
         const handleAcceptSentPalProposal = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
-                setPalStatus(1);
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: 1,
+                }));
             toast(
                 <Notification
                     type="ACCEPT_PAL_PROPOSAL"
@@ -133,7 +144,10 @@ export default function MainComponent() {
         const handleRejectSentPalProposal = (data) => {
             console.log(data);
             if (userIdProfileRef.current === data.userData_from.user_id)
-                setPalStatus(0);
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: 0,
+                }));
         };
 
         socket.on("on-palproposal-recieve", handlePalProposalReceive);
@@ -185,7 +199,7 @@ export default function MainComponent() {
                     {tab == 3 && <Inbox />}
                     {tab == 4 && <MyProfile />}
                     {mentionStatus == -1 && <MentionPalette />}
-                    {userId_profile != -1 && <NewProfile />}
+                    {activeProfile != -1 && <Profile />}
                 </div>
             )}
         </div>

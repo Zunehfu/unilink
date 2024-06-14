@@ -33,7 +33,7 @@ export default function PostWall({ posts, setPosts, scrollref }) {
         } catch (err) {
             if (!(err instanceof Err)) {
                 console.error(err);
-                toast.error("Something went wrong");
+                toast.error("Something went wrong.");
             }
         } finally {
             setLoading(false);

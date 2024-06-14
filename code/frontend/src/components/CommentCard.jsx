@@ -1,7 +1,7 @@
 import { useProfile } from "../hooks/useProfile";
 import ProfilePicture from "./ProfilePicture";
 import moment from "moment";
-import EditorReadOnly from "./editor_component/EditorReadOnly";
+import EditorReadOnly from "./editor/EditorReadOnly";
 
 export default function CommentCard({ commentData }) {
     const setProfile = useProfile();

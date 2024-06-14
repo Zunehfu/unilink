@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export function usePalInteractions(user_id) {
     const pfetch = usePfetch();
-    const { setPalStatus, userId_profile } = useContext(ProfileContext);
+    const { setActiveProfileData, activeProfile } = useContext(ProfileContext);
     const { userData } = useContext(UserDataContext);
     const navigate = useNavigate();
 
@@ -20,9 +20,12 @@ export function usePalInteractions(user_id) {
                 },
             });
 
-            console.log({ userId_profile });
-            if (userId_profile == user_id)
-                if (userId_profile == user_id) setPalStatus(data.pal_status);
+            console.log({ activeProfile });
+            if (activeProfile == user_id)
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: data.pal_status,
+                }));
             console.log(userData);
             socket.emit("handle-send-palproposal", {
                 userData,
@@ -42,8 +45,11 @@ export function usePalInteractions(user_id) {
                 },
             });
 
-            if (userId_profile == user_id)
-                if (userId_profile == user_id) setPalStatus(data.pal_status);
+            if (activeProfile == user_id)
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: data.pal_status,
+                }));
             socket.emit("handle-withdraw-palproposal", {
                 userData,
                 user_id_to: user_id,
@@ -62,8 +68,11 @@ export function usePalInteractions(user_id) {
                 },
             });
 
-            if (userId_profile == user_id)
-                if (userId_profile == user_id) setPalStatus(data.pal_status);
+            if (activeProfile == user_id)
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: data.pal_status,
+                }));
             socket.emit("handle-unpal", {
                 userData,
                 user_id_to: user_id,
@@ -85,7 +94,11 @@ export function usePalInteractions(user_id) {
                 }
             );
 
-            if (userId_profile == user_id) setPalStatus(data.pal_status);
+            if (activeProfile == user_id)
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: data.pal_status,
+                }));
             socket.emit("handle-accept-palproposal", {
                 userData,
                 user_id_to: user_id,
@@ -107,7 +120,11 @@ export function usePalInteractions(user_id) {
                 }
             );
 
-            if (userId_profile == user_id) setPalStatus(data.pal_status);
+            if (activeProfile == user_id)
+                setActiveProfileData((prevState) => ({
+                    ...prevState,
+                    pal_status: data.pal_status,
+                }));
             socket.emit("handle-reject-palproposal", {
                 userData,
                 user_id_to: user_id,

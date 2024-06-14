@@ -1,29 +1,30 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ProfileContext } from "../contexts/ProfileContext";
 import { usePfetch } from "./usePfetch";
+import { toast } from "sonner";
+import Err from "../utils/errClass";
 
 export function useProfileFetch() {
     const [loading, setLoading] = useState(true);
-    const [values, setValues] = useState({});
-    const navigate = useNavigate();
+    const { activeProfile, setActiveProfileData } = useContext(ProfileContext);
     const pfetch = usePfetch();
-    const { userId_profile, setPalStatus } = useContext(ProfileContext);
 
     useEffect(() => {
         async function fetchUser() {
             try {
-                const data = await pfetch("/users?user_id=" + userId_profile, {
+                const data = await pfetch("/users?user_id=" + activeProfile, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
                 });
-
-                setPalStatus(data.pal_status);
-                setValues(data);
+                console.log(data);
+                setActiveProfileData(data);
             } catch (err) {
-                if (err.code == "AUTH_FAIL") return navigate("/signin");
+                if (!(err instanceof Err)) {
+                    console.error(err);
+                    toast.error("Something went wrong.");
+                }
             } finally {
                 setLoading(false);
             }
@@ -31,5 +32,5 @@ export function useProfileFetch() {
 
         fetchUser();
     }, []);
-    return { loading, values };
+    return { loading };
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SmallSpinner from "./laoders/SmallSpinner";
-import Editor from "./editor_component/Editor";
+import Editor from "./editor/Editor";
 import { toast } from "sonner";
 import { usePfetch } from "../hooks/usePfetch";
 import "../styles/comment-btn.css";
@@ -44,7 +44,7 @@ export default function CommentInput({ posts, post_index, setPosts }) {
             } catch (err) {
                 if (!(err instanceof Err)) {
                     console.error(err);
-                    toast.error("Something went wrong");
+                    toast.error("Something went wrong.");
                 }
             } finally {
                 setLoading(false);

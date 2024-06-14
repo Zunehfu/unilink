@@ -1,213 +1,192 @@
-import { useContext } from "react";
-import ProfileItemForProfile from "./ProfileItemForProfile";
-import { ThreeDots } from "react-loader-spinner";
+import { useContext, useEffect, useState } from "react";
+
+import ProfilePicture from "./ProfilePicture";
+import PhotosLayout from "./PhotosLayout";
+import MutualList from "./MutualList";
+import "../styles/profile.css";
 import "../styles/profile-uni.css";
-import { ProfileContext } from "../contexts/ProfileContext";
+
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import ShoutsList from "./ShoutsList";
+import AdditionalInfo from "./AdditionalInfo";
 import { useProfileFetch } from "../hooks/useProfileFetch";
-import { usePalInteractions } from "../hooks/usePalInteractions";
+import { ThreeDots } from "react-loader-spinner";
+import PalButton from "./PalButton";
+import { useProfile } from "../hooks/useProfile";
+import { ProfileContext } from "../contexts/ProfileContext";
 
 export default function Profile() {
-    const { setUserId_profile, palStatus, userId_profile } =
-        useContext(ProfileContext);
-    const { loading, values } = useProfileFetch();
-    const {
-        handleAcceptPalProposal,
-        handleRejectPalProposal,
-        handleWithdrawPalProposal,
-        handleUnpal,
-        handleSendPalProposal,
-    } = usePalInteractions(userId_profile);
+    const [at, sat] = useState(2);
+    const setProfile = useProfile();
+    const { loading } = useProfileFetch();
+    const { activeProfileData } = useContext(ProfileContext);
+
+    // useGSAP(() => {
+    //     gsap.from(".number", {
+    //         innerText: 0,
+    //         duration: 3,
+    //         snap: {
+    //             innerText: 1,
+    //         },
+    //     });
+    // });
+
+    // useEffect(() => {
+    //     switch (at) {
+    //         case 0:
+    //             gsap.to(".bottom-line", {
+    //                 x: -173,
+    //                 width: 35,
+    //                 duration: 0.2,
+    //             });
+    //             break;
+    //         case 1:
+    //             gsap.to(".bottom-line", {
+    //                 x: -90,
+    //                 width: 45,
+    //                 duration: 0.2,
+    //             });
+    //             break;
+    //         case 3:
+    //             gsap.to(".bottom-line", {
+    //                 x: 90,
+    //                 width: 49,
+    //                 duration: 0.2,
+    //             });
+    //             break;
+    //         default:
+    //             gsap.to(".bottom-line", {
+    //                 x: 0,
+    //                 width: 46,
+    //                 duration: 0.2,
+    //             });
+    //     }
+    // }, [at]);
 
     return (
+        //bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%
         <>
-            <div className="z-10 fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-10 backdrop-blur-sm ">
-                <div className="relative rounded-md h-[90vh] w-[90vw] max-w-[900px] bg-white overflow-y-scroll">
-                    {loading ? (
-                        <div className="h-full w-full flex items-center justify-center">
-                            <ThreeDots
-                                visible={true}
-                                height="60"
-                                width="60"
-                                color="#4fa94d"
-                                radius="9"
-                                ariaLabel="three-dots-loading"
-                                wrapperStyle={{}}
-                                wrapperClass=""
-                            />
-                        </div>
-                    ) : (
-                        <>
-                            <i
-                                onClick={() => setUserId_profile(-1)}
-                                className="fa-solid fa-xmark relative left-1.5 top-0 cursor-pointer transition-all hover:scale-150"
-                            ></i>
-
-                            <div className="flex justify-center overflow-hidden">
-                                <div className="relative">
-                                    <div className="inline-block m-1 relative z-10">
-                                        {values["Name"]}'s Profile
-                                    </div>
-                                    <div className="metallic-shine">
-                                        Moratuwa
-                                    </div>
-                                    <div className="year-label">
-                                        3<sup>rd</sup> year
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mb-2 mt-2">
-                                {palStatus == 0 && (
-                                    <div className="flex justify-center">
-                                        <button
-                                            onClick={handleSendPalProposal}
-                                            className=" rounded-md bg-green-300 text-white py-1 px-3"
-                                        >
-                                            Send pal proposal
-                                        </button>
-                                    </div>
-                                )}
-                                {palStatus == 1 && (
-                                    <div className="flex justify-center">
-                                        <button
-                                            onClick={handleUnpal}
-                                            className="rounded-md bg-green-300 text-white py-1 px-3"
-                                        >
-                                            Unpal
-                                        </button>
-                                    </div>
-                                )}
-                                {palStatus == 2 && (
-                                    <>
-                                        <div className="text-center text-sm font-semibold">
-                                            Incoming pal proposal...
-                                        </div>
-                                        <div className="font-[Lexend] flex justify-center mt-1">
-                                            <button
-                                                onClick={
-                                                    handleAcceptPalProposal
-                                                }
-                                                className="active:text-white hover:text-green-700 hover:border-green-700 transition-all border-l-2 border-t-2 border-b-2 rounded-l-md border-green-300 bg-green-300 text-white py-1 px-3"
-                                            >
-                                                Accept{" "}
-                                                <i className="fa-solid fa-check"></i>
-                                            </button>
-                                            <button
-                                                onClick={
-                                                    handleRejectPalProposal
-                                                }
-                                                className="active:text-white hover:text-red-700 hover:border-red-700 transition-all border-r-2 border-t-2 border-b-2  rounded-r-md border-red-300 bg-red-300 text-white py-1 px-3"
-                                            >
-                                                Reject{" "}
-                                                <i className="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
-                                {palStatus == 3 && (
-                                    <div className="flex justify-center">
-                                        <button
-                                            onClick={handleWithdrawPalProposal}
-                                            className="rounded-md bg-green-300 text-white py-1 px-3"
-                                        >
-                                            Withdraw pal proposal
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="flex justify-center">
-                                <div className="relative z-10 w-48 h-48 border-2 border-white rounded-full overflow-hidden">
-                                    <img
-                                        src="../../public/profile.jpg"
-                                        alt="img"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap justify-evenly">
-                                <div className="m-3 min-w-60">
-                                    <div className="rounded-md text-center bg-white text-green-900 font-bold">
-                                        Account Info
-                                    </div>
-                                    <ProfileItemForProfile
-                                        field="Username"
-                                        value={values["Username"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Member since"
-                                        value={values["Member since"]}
-                                    />
-                                </div>
-
-                                <div className="m-3 min-w-60">
-                                    <div className="rounded-md text-center bg-white text-green-900 font-bold">
-                                        Basic Info
-                                    </div>
-                                    <ProfileItemForProfile
-                                        field="Name"
-                                        value={values["Name"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Age"
-                                        value="20"
-                                    />
-
-                                    <ProfileItemForProfile
-                                        field="University"
-                                        value={values["University"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Major"
-                                        value={values["Major"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Batch"
-                                        value="2023"
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Relationship status"
-                                        value={values["Relationship status"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Gender"
-                                        value={values["Gender"]}
-                                    />
-                                </div>
-
-                                <div className="m-3 min-w-60">
-                                    <div className="rounded-md text-center bg-white text-green-900 font-bold">
-                                        Additional Info
-                                    </div>
-                                    <ProfileItemForProfile
-                                        field="Contact No"
-                                        value={values["Contact No"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Uni email"
-                                        value={values["Uni email"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Personal email"
-                                        value={values["Personal email"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Personal website"
-                                        value={values["Personal website"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Interested in"
-                                        value={values["Interested in"]}
-                                    />
-                                    <ProfileItemForProfile
-                                        field="Date of birth"
-                                        value={values["Date of birth"]}
-                                    />
-                                </div>
-                            </div>
-                        </>
-                    )}
+            <button
+                onClick={() => setProfile(-1)}
+                className="fixed z-10 bg-gray-400 rounded-full w-6 text-white hover:text-emerald-500 cursor-pointer left-3 top-3 scale-150"
+            >
+                <i className="fa-solid fa-arrow-left"></i>
+            </button>
+            {loading ? (
+                <div className="h-full w-full flex items-center justify-center">
+                    <ThreeDots
+                        visible={true}
+                        height="60"
+                        width="60"
+                        color="#4fa94d"
+                        radius="9"
+                        ariaLabel="three-dots-loading"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                    />
                 </div>
-            </div>
+            ) : (
+                <div className="relative bg-white font-[Futura] text-white h-screen">
+                    <div className="h-[30%]">
+                        <div className="w-full fixed top-8">
+                            <div className="flex justify-center">
+                                <span className="metallic-shine overflow-hidden">
+                                    {activeProfileData.university}
+                                </span>
+                            </div>
+                            <div className="flex justify-center font-mono">
+                                <span className="bg-black px-4 rounded-b-full">
+                                    3rd year
+                                </span>
+                            </div>
+                            <div className="mt-4 flex justify-center font-mono">
+                                <span className="bg-black px-4 rounded-full">
+                                    {activeProfileData.major}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="min-h-[70%] relative rounded-t-[60px] bg-dark flex flex-col">
+                        <div className="absolute left-[calc(50%-58px)] -top-[58px] bg-dark rounded-full">
+                            <div className="m-2 flex">
+                                <ProfilePicture size="100px" />
+                            </div>
+                        </div>
+                        <div className="py-1 flex justify-around items-center">
+                            <div className="text-center">
+                                <b className="number">
+                                    {activeProfileData.pal_count}
+                                </b>
+                                <br />
+                                Friends
+                            </div>
+                            <div className="text-center">
+                                <b className="number">
+                                    {activeProfileData.post_count}
+                                </b>
+                                <br />
+                                Posts
+                            </div>
+                        </div>
+                        <div className="py-2 text-center font-[Lexend] font-semibold">
+                            @{activeProfileData.username}
+                        </div>
+                        <div className="py-2 text-center">
+                            {activeProfileData.name}
+                        </div>
+                        <div className="mx-auto max-w-[628px] text-center">
+                            A scenic landscape with a winding road stretching
+                            into the horizon, flanked by lush greenery and
+                            majestic mountains.
+                        </div>
+
+                        <div className="h-10 my-4 flex bg-transparent">
+                            <div className="w-1/2 relative">
+                                <PalButton />
+                            </div>
+                            <div className="w-1/2 relative">
+                                <button className="bg-white text-black py-1 px-5 absolute left-1/3 rounded-full">
+                                    Message
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className=" flex justify-center gap-11">
+                            <button onClick={() => sat(0)}>Stalk</button>
+                            <button className="relative" onClick={() => sat(1)}>
+                                Photos
+                                <span className="ml-1 left-full leading-5 font-sans px-1 top-0.5 text-xs font-medium rounded-full absolute bg-sky-500 ">
+                                    12
+                                </span>
+                            </button>
+                            <button className="relative" onClick={() => sat(2)}>
+                                Shouts
+                                <span className="ml-1 left-full leading-5 font-sans px-1 top-0.5 text-xs font-medium rounded-full absolute bg-sky-500 ">
+                                    {activeProfileData.post_count}
+                                </span>
+                            </button>
+                            <button className="relative" onClick={() => sat(3)}>
+                                Mutual
+                                <span className="ml-1 left-full leading-5 font-sans px-1 top-0.5 text-xs font-medium rounded-full absolute bg-sky-500 ">
+                                    {activeProfileData.mutual_pals_count}
+                                </span>
+                            </button>
+                        </div>
+                        <div className="mb-2 flex justify-center">
+                            <div
+                                style={{ left: 38, width: 46 }}
+                                className="bottom-line relative bg-white h-[2px] rounded-sm"
+                            ></div>
+                        </div>
+
+                        {at === 0 && <AdditionalInfo />}
+                        {at === 1 && <PhotosLayout />}
+                        {at === 2 && <ShoutsList />}
+                        {at === 3 && <MutualList />}
+                    </div>
+                </div>
+            )}
         </>
     );
 }

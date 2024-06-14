@@ -1,6 +1,6 @@
 import React from "react";
 import moment from "moment";
-import EditorReadOnly from "./editor_component/EditorReadOnly";
+import EditorReadOnly from "./editor/EditorReadOnly";
 
 export default function ShoutItem({ shout }) {
     return (

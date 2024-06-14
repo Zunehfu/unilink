@@ -1,10 +1,9 @@
-import { useContext, useState } from "react";
 import ProfilePicture from "./ProfilePicture";
-import { ProfileContext } from "../contexts/ProfileContext";
 import { usePalInteractions } from "../hooks/usePalInteractions";
+import { useProfile } from "../hooks/useProfile";
 
 export default function Notification({ type, userData_from }) {
-    const { setUserId_profile } = useContext(ProfileContext);
+    const setProfile = useProfile();
     const { handleAcceptPalProposal, handleRejectPalProposal } =
         usePalInteractions(userData_from.user_id);
     return (
@@ -14,9 +13,7 @@ export default function Notification({ type, userData_from }) {
                     <div className="flex gap-1 mb-1">
                         <div
                             className="flex items-center w-fit"
-                            onClick={() =>
-                                setUserId_profile(userData_from.user_id)
-                            }
+                            onClick={() => setProfile(userData_from.user_id)}
                         >
                             <ProfilePicture size="40px" />
                         </div>
@@ -24,7 +21,7 @@ export default function Notification({ type, userData_from }) {
                             <span
                                 className="font-semibold"
                                 onClick={() =>
-                                    setUserId_profile(userData_from.user_id)
+                                    setProfile(userData_from.user_id)
                                 }
                             >
                                 {userData_from.name}
@@ -32,7 +29,7 @@ export default function Notification({ type, userData_from }) {
                             <span
                                 className="underline text-xs"
                                 onClick={() =>
-                                    setUserId_profile(userData_from.user_id)
+                                    setProfile(userData_from.user_id)
                                 }
                             >
                                 (@{userData_from.username})
@@ -61,9 +58,7 @@ export default function Notification({ type, userData_from }) {
                     <div className="flex gap-1 mb-1">
                         <div
                             className="flex items-center w-fit"
-                            onClick={() =>
-                                setUserId_profile(userData_from.user_id)
-                            }
+                            onClick={() => setProfile(userData_from.user_id)}
                         >
                             <ProfilePicture size="40px" />
                         </div>
@@ -71,7 +66,7 @@ export default function Notification({ type, userData_from }) {
                             <span
                                 className="font-semibold"
                                 onClick={() =>
-                                    setUserId_profile(userData_from.user_id)
+                                    setProfile(userData_from.user_id)
                                 }
                             >
                                 {userData_from.name}
@@ -79,7 +74,7 @@ export default function Notification({ type, userData_from }) {
                             <span
                                 className="underline text-xs"
                                 onClick={() =>
-                                    setUserId_profile(userData_from.user_id)
+                                    setProfile(userData_from.user_id)
                                 }
                             >
                                 (@{userData_from.username})
