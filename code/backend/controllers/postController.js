@@ -191,7 +191,7 @@ const getComments = async (req, res, next) => {
             offset,
         ]);
 
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        // await new Promise((resolve) => setTimeout(resolve, 5000));
 
         res.json(response(true, "GET_COMMENTS", rows));
     } catch (err) {

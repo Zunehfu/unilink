@@ -2,23 +2,22 @@ import { useContext } from "react";
 import { ProfileContext } from "../contexts/ProfileContext";
 
 export default function AdditionalInfo() {
-    const { ativeUserData } = useContext(ProfileContext);
-    console.log(ativeUserData);
+    const { activeProfileData } = useContext(ProfileContext);
     return (
         <div className="flex flex-col items-center">
-            <div>{ativeUserData.member_since}</div>
-            <div>{ativeUserData.university}</div>
-            <div>{ativeUserData.age}</div>
-            <div>{ativeUserData.major}</div>
-            <div>{ativeUserData.batch}</div>
-            <div>{ativeUserData.relationship_Status}</div>
-            <div>{ativeUserData.gender}</div>
-            <div>{ativeUserData.interested_in}</div>
-            <div>{ativeUserData.contact}</div>
-            <div>{ativeUserData.email}</div>
-            <div>{ativeUserData.personal_email}</div>
-            <div>{ativeUserData.website}</div>
-            <div>{ativeUserData.birth_date}</div>
+            <div>{activeProfileData.member_since}</div>
+            <div>{activeProfileData.university}</div>
+            <div>{activeProfileData.age}</div>
+            <div>{activeProfileData.major}</div>
+            <div>{activeProfileData.batch}</div>
+            <div>{activeProfileData.relationship_Status}</div>
+            <div>{activeProfileData.gender}</div>
+            <div>{activeProfileData.interested_in}</div>
+            <div>{activeProfileData.contact}</div>
+            <div>{activeProfileData.email}</div>
+            <div>{activeProfileData.personal_email}</div>
+            <div>{activeProfileData.website}</div>
+            <div>{activeProfileData.birth_date}</div>
         </div>
     );
 }

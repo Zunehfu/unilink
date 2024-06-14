@@ -6,14 +6,19 @@ import { usePfetch } from "../hooks/usePfetch";
 import "../styles/comment-btn.css";
 import Err from "../utils/errClass";
 import { socket } from "../services/socket";
+import { $getRoot } from "lexical";
 
 export default function CommentInput({ posts, post_index, setPosts }) {
     const pfetch = usePfetch();
     const [editorState, setEditorState] = useState();
     const [loading, setLoading] = useState(false);
+    const [len, setLen] = useState(0);
 
     function OnEditorStateChange(editorState) {
         setEditorState(editorState);
+        editorState.read(() => {
+            setLen($getRoot().getTextContent().length);
+        });
     }
 
     function handleSubmission() {
@@ -60,19 +65,20 @@ export default function CommentInput({ posts, post_index, setPosts }) {
             <Editor
                 placeholder="Say something..."
                 className={
-                    editorState
+                    len > 0
                         ? "py-1 pl-1 pr-8 rounded-md bg-dark2  w-full outline-none max-h-28 overflow-y-scroll"
                         : "py-1 pl-1 pr-8 rounded-md bg-dark  w-full outline-none max-h-28 overflow-y-scroll"
                 }
                 placeholderClassName="absolute top-1 left-1 text-gray-400 pointer-events-none"
                 topLevelEditorStateAccess={OnEditorStateChange}
             />
+
             {loading && (
-                <div className="absolute right-0 scale-50">
+                <div className="absolute -bottom-1 right-0 scale-50">
                     <SmallSpinner />
                 </div>
             )}
-            {!loading && editorState && (
+            {!loading && len > 0 && (
                 <button
                     className="comment-btn-container"
                     onClick={handleSubmission}

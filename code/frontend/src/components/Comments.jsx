@@ -51,23 +51,12 @@ export default function Comments({
                 <div className=" absolute flex justify-center w-full -top-[43px]">
                     <span className="h-[22px] border-[22px] border-transparent border-b-dark"></span>
                 </div>
-                <div className="px-2.5 max-h-96 w-96 flex flex-col items-center justify-around gap-2.5 overflow-y-scroll">
+                <div className="px-2.5 max-h-96 w-96 flex flex-col items-center justify-around gap-2.5 overflow-y-scroll transition-all">
                     {comments.map((item) => (
                         <CommentCard commentData={item} key={item.comment_id} />
                     ))}
                     <div className="flex items-center">
-                        {!loading ? (
-                            <button
-                                onClick={() => {
-                                    setLoading(true);
-                                    fetchComments();
-                                }}
-                                className="text-green-200 text-xs hover:underline"
-                            >
-                                show {comment_count - comments.length} more
-                                comments
-                            </button>
-                        ) : (
+                        {loading && (
                             <div className=" ml-1 h-3 w-2">
                                 <RotatingLines
                                     visible={true}
@@ -81,6 +70,18 @@ export default function Comments({
                                     wrapperClass=""
                                 />
                             </div>
+                        )}
+                        {!loading && comment_count - comments.length > 0 && (
+                            <button
+                                onClick={() => {
+                                    setLoading(true);
+                                    fetchComments();
+                                }}
+                                className="text-emerald-500 text-xs hover:underline underline-offset-2"
+                            >
+                                show {comment_count - comments.length} more
+                                comments
+                            </button>
                         )}
                     </div>
                 </div>

@@ -470,9 +470,9 @@ const removePal = async (req, res, next) => {
         await pool.query(
             `DELETE FROM pals 
             WHERE 
-              (user_id = ? AND user_pal_id = ?) 
-              AND 
-              (user_id = ? AND user_pal_id = ?);`,
+              (user_id = ? AND pal_user_id = ?) 
+              OR 
+              (user_id = ? AND pal_user_id = ?) LIMIT 2;`,
             [
                 req.query.user_id,
                 req.user.user_id,

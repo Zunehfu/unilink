@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 
 import ProfilePicture from "./ProfilePicture";
 import PhotosLayout from "./PhotosLayout";
@@ -17,52 +17,52 @@ import { useProfile } from "../hooks/useProfile";
 import { ProfileContext } from "../contexts/ProfileContext";
 
 export default function Profile() {
-    const [at, sat] = useState(2);
+    const [section, setSection] = useState(2);
     const setProfile = useProfile();
     const { loading } = useProfileFetch();
     const { activeProfileData } = useContext(ProfileContext);
 
-    // useGSAP(() => {
-    //     gsap.from(".number", {
-    //         innerText: 0,
-    //         duration: 3,
-    //         snap: {
-    //             innerText: 1,
-    //         },
-    //     });
-    // });
+    useGSAP(() => {
+        gsap.from(".increase-count", {
+            innerText: 0,
+            duration: 3,
+            snap: {
+                innerText: 1,
+            },
+        });
+    });
 
-    // useEffect(() => {
-    //     switch (at) {
-    //         case 0:
-    //             gsap.to(".bottom-line", {
-    //                 x: -173,
-    //                 width: 35,
-    //                 duration: 0.2,
-    //             });
-    //             break;
-    //         case 1:
-    //             gsap.to(".bottom-line", {
-    //                 x: -90,
-    //                 width: 45,
-    //                 duration: 0.2,
-    //             });
-    //             break;
-    //         case 3:
-    //             gsap.to(".bottom-line", {
-    //                 x: 90,
-    //                 width: 49,
-    //                 duration: 0.2,
-    //             });
-    //             break;
-    //         default:
-    //             gsap.to(".bottom-line", {
-    //                 x: 0,
-    //                 width: 46,
-    //                 duration: 0.2,
-    //             });
-    //     }
-    // }, [at]);
+    useGSAP(() => {
+        switch (section) {
+            case 0:
+                gsap.to(".section-line", {
+                    x: -173,
+                    width: 35,
+                    duration: 0.2,
+                });
+                break;
+            case 1:
+                gsap.to(".section-line", {
+                    x: -90,
+                    width: 45,
+                    duration: 0.2,
+                });
+                break;
+            case 3:
+                gsap.to(".section-line", {
+                    x: 90,
+                    width: 49,
+                    duration: 0.2,
+                });
+                break;
+            default:
+                gsap.to(".section-line", {
+                    x: 0,
+                    width: 46,
+                    duration: 0.2,
+                });
+        }
+    }, [section]);
 
     return (
         //bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%
@@ -87,7 +87,7 @@ export default function Profile() {
                     />
                 </div>
             ) : (
-                <div className="relative bg-white font-[Futura] text-white h-screen">
+                <div className="relative bg-body bg-dot-texture font-[Futura] text-white h-screen">
                     <div className="h-[30%]">
                         <div className="w-full fixed top-8">
                             <div className="flex justify-center">
@@ -115,14 +115,14 @@ export default function Profile() {
                         </div>
                         <div className="py-1 flex justify-around items-center">
                             <div className="text-center">
-                                <b className="number">
+                                <b className="increase-count">
                                     {activeProfileData.pal_count}
                                 </b>
                                 <br />
                                 Friends
                             </div>
                             <div className="text-center">
-                                <b className="number">
+                                <b className="increase-count">
                                     {activeProfileData.post_count}
                                 </b>
                                 <br />
@@ -153,20 +153,29 @@ export default function Profile() {
                         </div>
 
                         <div className=" flex justify-center gap-11">
-                            <button onClick={() => sat(0)}>Stalk</button>
-                            <button className="relative" onClick={() => sat(1)}>
+                            <button onClick={() => setSection(0)}>Stalk</button>
+                            <button
+                                className="relative"
+                                onClick={() => setSection(1)}
+                            >
                                 Photos
                                 <span className="ml-1 left-full leading-5 font-sans px-1 top-0.5 text-xs font-medium rounded-full absolute bg-sky-500 ">
                                     12
                                 </span>
                             </button>
-                            <button className="relative" onClick={() => sat(2)}>
+                            <button
+                                className="relative"
+                                onClick={() => setSection(2)}
+                            >
                                 Shouts
                                 <span className="ml-1 left-full leading-5 font-sans px-1 top-0.5 text-xs font-medium rounded-full absolute bg-sky-500 ">
                                     {activeProfileData.post_count}
                                 </span>
                             </button>
-                            <button className="relative" onClick={() => sat(3)}>
+                            <button
+                                className="relative"
+                                onClick={() => setSection(3)}
+                            >
                                 Mutual
                                 <span className="ml-1 left-full leading-5 font-sans px-1 top-0.5 text-xs font-medium rounded-full absolute bg-sky-500 ">
                                     {activeProfileData.mutual_pals_count}
@@ -176,14 +185,14 @@ export default function Profile() {
                         <div className="mb-2 flex justify-center">
                             <div
                                 style={{ left: 38, width: 46 }}
-                                className="bottom-line relative bg-white h-[2px] rounded-sm"
+                                className="section-line relative bg-white h-[2px] rounded-sm"
                             ></div>
                         </div>
 
-                        {at === 0 && <AdditionalInfo />}
-                        {at === 1 && <PhotosLayout />}
-                        {at === 2 && <ShoutsList />}
-                        {at === 3 && <MutualList />}
+                        {section === 0 && <AdditionalInfo />}
+                        {section === 1 && <PhotosLayout />}
+                        {section === 2 && <ShoutsList />}
+                        {section === 3 && <MutualList />}
                     </div>
                 </div>
             )}

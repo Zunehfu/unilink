@@ -7,6 +7,7 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalAutoLinkPlugin } from "./plugins/AutoLinkPlugin";
 import { MentionPlugin } from "./plugins/MentionPlugin";
+// import { FocusCheckerPlugin } from "./plugins/FocusCheckerPlugin";
 
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { MentionNode } from "./nodes/MentionNode";

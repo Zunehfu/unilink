@@ -16,7 +16,7 @@ export class MentionNode extends TextNode {
 
     createDOM(config) {
         const dom = super.createDOM(config);
-        dom.className = "mention-node";
+        dom.className = "editor-mention-node";
         dom.innerText = this.__text;
         return dom;
     }

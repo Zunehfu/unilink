@@ -158,7 +158,6 @@ export default function MainComponent() {
         socket.on("on-being-unpaled", handleBeingUnpaled);
         socket.on("on-accept-sent-palproposal", handleAcceptSentPalProposal);
         socket.on("on-reject-sent-palproposal", handleRejectSentPalProposal);
-
         return () => {
             socket.off("on-palproposal-recieve", handlePalProposalReceive);
             socket.off(
@@ -179,7 +178,7 @@ export default function MainComponent() {
     }, []);
 
     return (
-        <div>
+        <>
             {loading ? (
                 <Loader />
             ) : (
@@ -202,7 +201,6 @@ export default function MainComponent() {
                     {activeProfile != -1 && <Profile />}
                 </div>
             )}
-        </div>
+        </>
     );
 }
-Profile;
