@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 04, 2024 at 10:34 AM
+-- Generation Time: Jun 15, 2024 at 11:20 AM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `user_id` int UNSIGNED NOT NULL,
   `post_id` int UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL,
-  `content` varchar(512) NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`comment_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -77,8 +77,10 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 DROP TABLE IF EXISTS `pals`;
 CREATE TABLE IF NOT EXISTS `pals` (
   `pal_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id_from` int UNSIGNED NOT NULL,
-  `user_id_to` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `pal_user_id` int UNSIGNED NOT NULL,
+  `from_user_id` int UNSIGNED NOT NULL,
+  `to_user_id` int UNSIGNED NOT NULL,
   PRIMARY KEY (`pal_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -109,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `is_anonymous` tinyint(1) NOT NULL,
   `visibility` int UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL,
-  `content` varchar(1024) NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`post_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

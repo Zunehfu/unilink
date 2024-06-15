@@ -29,10 +29,12 @@ export default function AddPostPage() {
                     visibility,
                 }),
             });
+
+            toast.success("Posted successfully.");
         } catch (err) {
             if (!(err instanceof Err)) {
                 console.error(err.message);
-                toast.error("Unexpected error occured");
+                toast.error("Unexpected error occured.");
             }
         } finally {
             setHideme(false);
@@ -61,16 +63,21 @@ export default function AddPostPage() {
                     className="fa-solid fa-xmark relative left-[130px] top-[-10px] cursor-pointer hover:text-emerald-500"
                 ></i>
                 <br />
+                <Editor
+                    placeholder="Say something..."
+                    placeholderClassName="absolute top-[5px] left-[5px] pointer-events-none"
+                    className="border-emerald-500 border-2 bg-dark2 rounded-xl outline-none p-1 max-h-40 overflow-y-scroll"
+                    topLevelEditorStateAccess={onEditorStateChanged}
+                />
                 <br />
                 <div>Wanna express freely?</div>
                 <label htmlFor="hideme">Hide me </label>
-                {/* <input
+                <input
                     type="checkbox"
                     id="hideme"
                     checked={hideme}
                     onChange={() => !loading && setHideme(!hideme)}
-                /> */}
-                <Editor topLevelEditorStateAccess={onEditorStateChanged} />
+                />
                 <br />
                 <br />
                 <div>Choose people that you wanna share with...</div>
@@ -113,17 +120,6 @@ export default function AddPostPage() {
                     Share with friends from your university
                 </label>
                 <br />
-                {/* <button
-                    className="mt-2 rounded-xl bg-sky-500 w-20 h-8 flex justify-center items-center"
-                    onClick={() => {
-                        if (!loading) {
-                            setLoading(true);
-                            handleSubmission();
-                        }
-                    }}
-                >
-                    {loading ? <SmallSpinner /> : <span>Share</span>}
-                </button> */}
                 <button
                     className="mt-2 rounded-xl bg-sky-500 w-20 h-8 flex justify-center items-center"
                     onClick={handleClick}
