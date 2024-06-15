@@ -26,7 +26,7 @@ export default function EditorReadOnly({ initialEditorState }) {
     return (
         <LexicalComposer initialConfig={initialConfig}>
             <RichTextPlugin
-                contentEditable={<ContentEditable className="text-white" />}
+                contentEditable={<ContentEditable />}
                 ErrorBoundary={LexicalErrorBoundary}
             />
             <NodeEventPlugin

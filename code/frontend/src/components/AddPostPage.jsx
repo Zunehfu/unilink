@@ -53,7 +53,7 @@ export default function AddPostPage() {
     }
 
     return (
-        <div className="text-white fixed top-0 left-0 w-full h-full flex items-center justify-center ">
+        <div className="bg-body bg-dot-texture text-white fixed top-0 left-0 w-full h-full flex items-center justify-center ">
             <div className=" rounded-xl w-[400px] bg-dark p-4 ">
                 <label htmlFor="yo">What do you have in your mind?</label>
                 <i

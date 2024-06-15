@@ -61,7 +61,7 @@ export default function CommentInput({ posts, post_index, setPosts }) {
     }
 
     return (
-        <div className="relative w-full my-2">
+        <div className="relative w-full my-2 z-0">
             <Editor
                 placeholder="Say something..."
                 className={

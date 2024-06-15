@@ -2,8 +2,8 @@ import ChatCard from "./ChatCard";
 
 export default function Inbox() {
     return (
-        <div className="text-white">
-            <div className="fixed z-10 left-0 right-0 top-2 mx-auto bg-black font-[Lexend] justify-between search-bar flex rounded-2xl h-10 w-5/6 max-w-[728px] text-white">
+        <div className="fixed top-0 text-white bg-dot-texture bg-body">
+            <div className="fixed left-0 right-0 top-2 mx-auto bg-black font-[Lexend] justify-between search-bar flex rounded-2xl h-10 w-5/6 max-w-[728px] text-white">
                 <div className="w-10 flex items-center justify-center">
                     <i className=" fa-solid fa-magnifying-glass cursor-pointer hover:text-green-300"></i>
                 </div>

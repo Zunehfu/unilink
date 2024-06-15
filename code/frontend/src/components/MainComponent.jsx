@@ -44,9 +44,8 @@ export default function MainComponent() {
     const { setUserData } = useContext(UserDataContext);
     const { mentionStatus } = useContext(MentionContext);
     const userIdProfileRef = useRef(activeProfile);
-    const scrollref = useRef(null);
-    const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const scroll = useRef();
 
     useEffect(() => {
         const checkValidity = async () => {
@@ -186,13 +185,16 @@ export default function MainComponent() {
                     <Toaster richColors />
                     <HorizontalNav />
                     <VerticalNav />
-                    {tab == 0 && (
-                        <Home
-                            posts={posts}
-                            setPosts={setPosts}
-                            scrollref={scrollref}
-                        />
-                    )}
+                    <div
+                        ref={scroll}
+                        className={
+                            tab == 0 && activeProfile == -1
+                                ? "h-screen overflow-y-scroll"
+                                : "h-screen overflow-y-hidden"
+                        }
+                    >
+                        <Home scrollref={scroll} />
+                    </div>
                     {tab == 1 && <Search />}
                     {tab == 2 && <AddPostPage />}
                     {tab == 3 && <Inbox />}

@@ -1,13 +1,11 @@
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import ProfilePicture from "./ProfilePicture";
 import PhotosLayout from "./PhotosLayout";
 import MutualList from "./MutualList";
 import "../styles/profile.css";
 import "../styles/profile-uni.css";
-
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import anime from "animejs";
 import ShoutsList from "./ShoutsList";
 import AdditionalInfo from "./AdditionalInfo";
 import { useProfileFetch } from "../hooks/useProfileFetch";
@@ -15,6 +13,7 @@ import { ThreeDots } from "react-loader-spinner";
 import PalButton from "./PalButton";
 import { useProfile } from "../hooks/useProfile";
 import { ProfileContext } from "../contexts/ProfileContext";
+import { toast } from "sonner";
 
 export default function Profile() {
     const [section, setSection] = useState(2);
@@ -22,44 +21,38 @@ export default function Profile() {
     const { loading } = useProfileFetch();
     const { activeProfileData } = useContext(ProfileContext);
 
-    useGSAP(() => {
-        gsap.from(".increase-count", {
-            innerText: 0,
-            duration: 3,
-            snap: {
-                innerText: 1,
-            },
-        });
-    });
-
-    useGSAP(() => {
+    useEffect(() => {
         switch (section) {
             case 0:
-                gsap.to(".section-line", {
-                    x: -173,
+                anime({
+                    targets: ".section-line",
+                    translateX: -173,
                     width: 35,
-                    duration: 0.2,
+                    duration: 500,
                 });
                 break;
             case 1:
-                gsap.to(".section-line", {
-                    x: -90,
+                anime({
+                    targets: ".section-line",
+                    translateX: -90,
                     width: 45,
-                    duration: 0.2,
+                    duration: 500,
                 });
                 break;
             case 3:
-                gsap.to(".section-line", {
-                    x: 90,
+                anime({
+                    targets: ".section-line",
+                    translateX: 90,
                     width: 49,
-                    duration: 0.2,
+                    duration: 500,
                 });
                 break;
             default:
-                gsap.to(".section-line", {
-                    x: 0,
+                anime({
+                    targets: ".section-line",
+                    translateX: 0,
                     width: 46,
-                    duration: 0.2,
+                    duration: 500,
                 });
         }
     }, [section]);
@@ -74,7 +67,7 @@ export default function Profile() {
                 <i className="fa-solid fa-arrow-left"></i>
             </button>
             {loading ? (
-                <div className="h-full w-full flex items-center justify-center">
+                <div className="bg-dark fixed top-0 h-screen w-screen flex items-center justify-center">
                     <ThreeDots
                         visible={true}
                         height="60"
@@ -87,7 +80,7 @@ export default function Profile() {
                     />
                 </div>
             ) : (
-                <div className="relative bg-body bg-dot-texture font-[Futura] text-white h-screen">
+                <div className="fixed top-0 bg-body bg-dot-texture font-[Futura] text-white h-screen w-screen overflow-y-scroll">
                     <div className="h-[30%]">
                         <div className="w-full fixed top-8">
                             <div className="flex justify-center">
@@ -115,16 +108,12 @@ export default function Profile() {
                         </div>
                         <div className="py-1 flex justify-around items-center">
                             <div className="text-center">
-                                <b className="increase-count">
-                                    {activeProfileData.pal_count}
-                                </b>
+                                <b>{activeProfileData.pal_count}</b>
                                 <br />
                                 Friends
                             </div>
                             <div className="text-center">
-                                <b className="increase-count">
-                                    {activeProfileData.post_count}
-                                </b>
+                                <b>{activeProfileData.post_count}</b>
                                 <br />
                                 Posts
                             </div>
@@ -146,7 +135,14 @@ export default function Profile() {
                                 <PalButton />
                             </div>
                             <div className="w-1/2 relative">
-                                <button className="bg-white text-black py-1 px-5 absolute left-1/3 rounded-full">
+                                <button
+                                    onClick={() => {
+                                        toast.info(
+                                            "This feature is yet to be implemented."
+                                        );
+                                    }}
+                                    className="bg-white text-black py-1 px-5 absolute left-1/3 rounded-full"
+                                >
                                     Message
                                 </button>
                             </div>

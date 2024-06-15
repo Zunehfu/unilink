@@ -5,6 +5,8 @@ export default function PhotosLayout({}) {
         <div className="grid-wrapper">
             <div className="tall ">
                 <img
+                    decoding="async"
+                    loading="lazy"
                     data-scroll
                     data-scroll-speed="0.1"
                     src="../../public/post2.jpg"
@@ -13,6 +15,8 @@ export default function PhotosLayout({}) {
             </div>
             <div className="wide">
                 <img
+                    decoding="async"
+                    loading="lazy"
                     data-scroll
                     data-scroll-speed="-0.1"
                     src="../../public/post3.jpg"
@@ -21,6 +25,8 @@ export default function PhotosLayout({}) {
             </div>
             <div>
                 <img
+                    decoding="async"
+                    loading="lazy"
                     data-scroll
                     data-scroll-speed="-0.1"
                     src="../../public/post1.jpg"
@@ -29,6 +35,8 @@ export default function PhotosLayout({}) {
             </div>
             <div>
                 <img
+                    decoding="async"
+                    loading="lazy"
                     data-scroll
                     data-scroll-speed="-0.1"
                     src="../../public/profile.jpg"
@@ -37,6 +45,8 @@ export default function PhotosLayout({}) {
             </div>
             <div className="tall wide">
                 <img
+                    decoding="async"
+                    loading="lazy"
                     data-scroll
                     data-scroll-speed="-0.1"
                     src="../../public/post6.jpeg"
@@ -45,6 +55,8 @@ export default function PhotosLayout({}) {
             </div>
             <div className="">
                 <img
+                    decoding="async"
+                    loading="lazy"
                     data-scroll
                     data-scroll-speed="0.1"
                     src="../../public/post4.jpeg"
@@ -53,6 +65,8 @@ export default function PhotosLayout({}) {
             </div>
             <div className="">
                 <img
+                    decoding="async"
+                    loading="lazy"
                     data-scroll
                     data-scroll-speed="-0.1"
                     src="../../public/post5.jpeg"

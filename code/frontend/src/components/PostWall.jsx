@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import PostText from "./PostText";
 import SmallSpinner from "./laoders/SmallSpinner";
@@ -9,14 +9,17 @@ import { socket } from "../services/socket";
 import { toast } from "sonner";
 import Err from "../utils/errClass";
 
-export default function PostWall({ posts, setPosts, scrollref }) {
+export default function PostWall({ scrollref }) {
     const pfetch = usePfetch();
     const [loading, setLoading] = useState(false);
-
+    const [posts, setPosts] = useState([]);
+    const postWallRef = useRef();
+    const postsRef = useRef();
     async function fetchPosts() {
         try {
+            console.log({ ref: postsRef.current.length, state: posts });
             const data = await pfetch(
-                "/posts?from=" + posts.length.toString(),
+                "/posts?from=" + postsRef.current.length.toString(),
                 {
                     method: "GET",
                     headers: {
@@ -25,7 +28,7 @@ export default function PostWall({ posts, setPosts, scrollref }) {
                 }
             );
 
-            setPosts([...posts, ...data]);
+            setPosts([...postsRef.current, ...data]);
             socket.emit(
                 "on-posts-loaded",
                 data.map((post) => post.post_id)
@@ -39,41 +42,47 @@ export default function PostWall({ posts, setPosts, scrollref }) {
             setLoading(false);
         }
     }
-
     function handleScroll() {
-        scrollref.current = window.scrollY;
-
+        console.log("helo");
+        //window.innerHeight = (header + margin)[56px] + (postwall)[postWallRef.current.offsetHeight]
         if (
-            window.innerHeight + document.documentElement.scrollTop <
-                document.documentElement.offsetHeight ||
+            scrollref.current.scrollTop + 56 <
+                postWallRef.current.offsetHeight - window.innerHeight ||
             loading
-        ) {
+        )
             return;
-        }
 
+        console.log("yooooo");
         setLoading(true);
         fetchPosts();
     }
 
     useEffect(() => {
-        if (posts.length == 0) {
+        postsRef.current = posts;
+    }, [posts]);
+
+    useEffect(() => {
+        if (postsRef.current.length == 0) {
             setLoading(true);
             fetchPosts();
-        } else window.scrollTo(0, scrollref.current);
+        }
     }, []);
 
     useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
+        scrollref.current.addEventListener("scroll", handleScroll);
 
         return () => {
-            window.removeEventListener("scroll", handleScroll);
+            scrollref.current.removeEventListener("scroll", handleScroll);
         };
-    }, [loading]);
+    }, []);
 
     return (
         <>
             <Header />
-            <div className="mx-auto md:ml-auto md:mr-[calc((100vw-256px-384px)/2)] lg:mx-auto flex flex-col w-fit">
+            <div
+                ref={postWallRef}
+                className="mx-auto md:ml-auto md:mr-[calc((100vw-256px-384px)/2)] lg:mx-auto flex flex-col w-fit"
+            >
                 {posts.map((post, i) => (
                     <PostText
                         key={post.post_id}
