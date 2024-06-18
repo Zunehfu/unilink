@@ -1,6 +1,6 @@
-import pool from "../utils/database.js";
-import Err from "../utils/customErr.js";
-import response from "../utils/response.js";
+import { pool } from "../utils/database.js";
+import { Err } from "../utils/error.js";
+import { response } from "../utils/response.js";
 
 const insert_post_prepared_stmt = `INSERT INTO posts (
     user_id, 

@@ -1,0 +1,73 @@
+{
+    "universities": [
+        {
+            "id": 0,
+            "name": "University of Moratuwa",
+            "domains": ["uom.lk"],
+            "shorten": ["UOM", "MORA"],
+            "degrees": [
+                {
+                    "id": 0,
+                    "name": "Electronics and Telecommunications Engineering",
+                    "shorten": ["ENTC"]
+                },
+                {
+                    "id": 1,
+                    "name": "Computer science and Engineering",
+                    "shorten": ["CSE"]
+                },
+                {
+                    "id": 2,
+                    "name": "Biomedical Engineering",
+                    "shorten": ["BME"]
+                },
+                {
+                    "id": 3,
+                    "name": "Electrical Engineering",
+                    "shorten": ["EE"]
+                },
+                {
+                    "id": 4,
+                    "name": "Mechanical Engineering",
+                    "shorten": ["ME"]
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "University of Peradeniya",
+            "domains": ["pdn.ac.lk"],
+            "degrees": [
+                {
+                    "id": 0,
+                    "name": "Electrical and Electronics Engineering",
+                    "shorten": ["EEE"]
+                },
+                {
+                    "id": 1,
+                    "name": "Mechanical Engineering",
+                    "shorten": ["ME"]
+                }
+            ]
+        }
+    ],
+    "relationship_status": [
+        { "id": 0, "name": "Married" },
+        { "id": 1, "name": "Divorced" },
+        { "id": 2, "name": "Single" },
+        { "id": 3, "name": "Widowed" },
+        { "id": 4, "name": "Dating" },
+        { "id": 5, "name": "Engaged" },
+        { "id": 6, "name": "Complicated" }
+    ],
+    "interested_in": [
+        { "id": 0, "name": "Men" },
+        { "id": 1, "name": "Women" },
+        { "id": 2, "name": "Other" }
+    ],
+    "gender": [
+        { "id": 0, "name": "Male" },
+        { "id": 1, "name": "Female" },
+        { "id": 2, "name": "Other" }
+    ]
+}

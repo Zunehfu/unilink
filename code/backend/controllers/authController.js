@@ -1,7 +1,12 @@
-import pool from "../utils/database.js";
+import { pool } from "../utils/database.js";
 import jwt from "jsonwebtoken";
-import response from "../utils/response.js";
-import Err from "../utils/customErr.js";
+import { response } from "../utils/response.js";
+import { Err } from "../utils/error.js";
+import { sendMail } from "../utils/email/email.js";
+import {
+    getUniIdByDomain,
+    getUniNameByUniId,
+} from "../utils/config/valuesRead.js";
 
 const get_user_prepared_stmt__user_id = `SELECT * FROM users WHERE user_id = ?`;
 
@@ -131,35 +136,127 @@ const insert_user_prepared_stmt = `INSERT INTO users (
     last_online
 ) VALUES (?, ?, ?, ?, ?, ?)`;
 
-const verifySignup = async (req, res, next) => {
-    try {
-        const timestamp = new Date();
+const USERNAME_REGEX = /^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+const UOM_REGEX =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@uom\.lk$/;
 
-        const [rows] = await pool.query(insert_user_prepared_stmt, [
-            req.body.username,
-            req.body.email,
-            req.body.pass,
-            req.body.university,
+const verifySignup = async (req, res, next) => {
+    let conn;
+    try {
+        const username = req.body.username;
+        const pass = req.body.pass;
+        const token = req.body.token;
+
+        if (!USERNAME_REGEX.test(username))
+            throw new Err("USERNAME_CHECK_FAILED");
+        if (!PASSWORD_REGEX.test(pass)) throw new Err("PASS_CHECK_FAILED");
+
+        const decodedToken = jwt.verify(token, process.env.SECRET_STR);
+
+        if (!decodedToken.email) throw new Err("MALFORMED_TOKEN");
+        const email = decodedToken.email;
+
+        if (!UOM_REGEX.test(email)) throw new Err("MALFORMED_TOKEN");
+
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+
+        const [user_check] = await conn.query(
+            `SELECT EXISTS(SELECT 1 FROM users WHERE username = ? LIMIT 1) AS is_valid`,
+            [username]
+        );
+        if (user_check[0].is_valid) throw new Err("USERNAME_EXISTS");
+
+        const timestamp = new Date();
+        await conn.query(insert_user_prepared_stmt, [
+            username,
+            email,
+            pass,
+            getUniIdByDomain(email.split("@")[1]),
             timestamp,
             timestamp,
         ]);
 
-        console.log({ rows });
-        res.json({
-            status: "SUCCESS",
-            code: "NONE",
-            data: {
-                token: "token",
-            },
-        });
+        conn.commit();
+
+        res.json(response(true, "VERIFY_SIGNUP", { email, username }));
     } catch (err) {
-        res.json({
-            status: "ERROR",
-            code: "CATCH_ERROR",
-            data: {
-                message: err.message,
-            },
+        if (conn) {
+            await conn.rollback();
+        }
+
+        if (err instanceof Err) {
+            res.json(response(true, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
+    } finally {
+        if (conn) conn.release();
+    }
+};
+
+const sendEmailVerificationToken = async (req, res, next) => {
+    try {
+        const email = req.body.email;
+
+        const [user_check] = await pool.query(
+            `SELECT EXISTS(SELECT 1 FROM users WHERE email = ? LIMIT 1) AS is_valid`,
+            [email]
+        );
+        if (user_check[0].is_valid) throw new Err("EMAIL_EXISTS");
+
+        const token = jwt.sign({ email }, process.env.SECRET_STR, {
+            expiresIn: process.env.EMAIL_EXPIRES,
         });
+        console.log(email, token);
+        await sendMail(email, token);
+        res.json(response(true, "EMAIL_SEND", {}));
+    } catch (err) {
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
+    }
+};
+
+const verifyEmailVerificationToken = async (req, res, next) => {
+    try {
+        const token = req.body.token;
+        const decodedToken = jwt.verify(token, process.env.SECRET_STR);
+        if (!decodedToken.email) throw new Err("MALFORMED_TOKEN");
+
+        const email = decodedToken.email;
+        const university = getUniNameByUniId(
+            getUniIdByDomain(email.split("@")[1])
+        );
+
+        res.json(
+            response(true, "TOKEN_VERIFICATION", {
+                token,
+                email,
+                university,
+            })
+        );
+    } catch (err) {
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
     }
 };
 
@@ -168,4 +265,6 @@ export default {
     protectRoute,
     verifySignin,
     verifySignup,
+    sendEmailVerificationToken,
+    verifyEmailVerificationToken,
 };

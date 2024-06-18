@@ -1,8 +1,16 @@
-import pool from "../utils/database.js";
+import { pool } from "../utils/database.js";
+import { response } from "../utils/response.js";
+import { values } from "../utils/config/values.js";
+
 import moment from "moment";
-import response from "../utils/response.js";
-import Err from "../utils/customErr.js";
-import svalues from "../utils/currentlySupportedValues.js";
+import { Err } from "../utils/error.js";
+import {
+    getGenderByGenderId,
+    getInterestedInByInterestedInId,
+    getMajorByUniIdAndMajorId,
+    getRelationshipStatusByRelationshipId,
+    getUniNameByUniId,
+} from "../utils/config/valuesRead.js";
 
 const getUserWithId = async (req, res, next) => {
     let conn;
@@ -81,17 +89,25 @@ const getUserWithId = async (req, res, next) => {
                 name: user_.name,
                 created_at: moment(user_.created_at).format("YYYY-MM-DD"),
                 age: user_.age,
-                major: user_.major,
+                major: user_.major
+                    ? getMajorByUniIdAndMajorId(user_.university, user_.major)
+                    : null,
                 batch: user_.batch,
-                relationship_status: user_.relationship_status,
-                gender: user_.gender,
+                relationship_status: user_.relationship_status
+                    ? getRelationshipStatusByRelationshipId(
+                          user_.relationship_status
+                      )
+                    : null,
+                gender: user_.gender ? getGenderByGenderId(user_.gender) : null,
                 username: user_.username,
-                university: user_.university,
+                university: getUniNameByUniId(user_.university),
                 contact: user_.contact,
                 email: user_.email,
                 personal_email: user_.personal_email,
                 website: user_.website,
-                interested_in: user_.interested_in,
+                interested_in: user_.interested_in
+                    ? getInterestedInByInterestedInId(user_.interested_in)
+                    : null,
                 birth_date: user_.birth_date,
                 pal_status,
                 mutual_pals_count,
@@ -177,8 +193,8 @@ const betaresponse = async (req, res, next) => {
                 break;
 
             case "Relationship status":
-                value = svalues.relationship_status_l.find(
-                    (val) => val.toLowerCase() === lvalue
+                value = values.relationship_status.find(
+                    (val) => val.name.toLowerCase() === lvalue
                 );
                 if (!value) value = null;
                 sql =
@@ -186,8 +202,8 @@ const betaresponse = async (req, res, next) => {
                 break;
 
             case "Gender":
-                value = svalues.gender_l.find(
-                    (val) => val.toLowerCase() === lvalue
+                value = values.gender.find(
+                    (val) => val.name.toLowerCase() === lvalue
                 );
                 if (!value) value = null;
                 sql = "UPDATE users SET gender = ? WHERE user_id = ? LIMIT 1";
@@ -220,8 +236,8 @@ const betaresponse = async (req, res, next) => {
                 break;
 
             case "Interested in":
-                value = svalues.interested_in_l.find(
-                    (val) => val.toLowerCase() === lvalue
+                value = values.interested_in.find(
+                    (val) => val.name.toLowerCase() === lvalue
                 );
                 if (!value) value = null;
                 sql =
@@ -291,6 +307,10 @@ const getLikeUsers = async (req, res, next) => {
         if (q == "%%") return res.json(response(true, "SEARCH_USERS", []));
 
         const [rows] = await pool.query(get_likeusers_prepared_stmt, [q, q]);
+
+        rows.forEach((row) => {
+            row.university = getUniNameByUniId(row.university);
+        });
 
         res.json(response(true, "SEARCH_USERS", rows));
     } catch (err) {
@@ -526,6 +546,28 @@ const getMyPalProposals = async (req, res, next) => {
     }
 };
 
+const checkUsername = async (req, res, next) => {
+    try {
+        const [user_check] = await pool.query(
+            `SELECT EXISTS(SELECT 1 FROM users WHERE username = ? LIMIT 1) AS is_valid`,
+            [req.query.username]
+        );
+        if (user_check[0].is_valid) throw new Err("INVALID_VALUE_USERNAME");
+
+        res.json(response(true, "USERNAME_CHECK", {}));
+    } catch (err) {
+        if (err instanceof Err) {
+            res.json(response(false, err.message, {}));
+        } else {
+            res.json(
+                response(false, "UNEXPECTED_ERROR_BACKEND", {
+                    message: err.message,
+                })
+            );
+        }
+    }
+};
+
 // const get_pals_prepared_stmt = `SELECT u.user_id, u.university, u.name, u.username
 // FROM pals p
 // INNER JOIN users u ON p.user_id_from = u.user_id
@@ -558,4 +600,5 @@ export default {
     removePal,
     getLikeUsers,
     betaresponse,
+    checkUsername,
 };

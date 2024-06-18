@@ -9,6 +9,13 @@ router.route("/signin").post(authController.verifySignin);
 router.route("/signup").post(authController.verifySignup);
 
 router
+    .route("/sendemailverificationtoken")
+    .post(authController.sendEmailVerificationToken);
+router
+    .route("/verifyemailverificationtoken")
+    .post(authController.verifyEmailVerificationToken);
+
+router
     .route("/search")
     .get(authController.protectRoute, userController.getLikeUsers);
 
@@ -55,5 +62,7 @@ router.route("/validate").get(authController.validate);
 router
     .route("/betaresponse")
     .post(authController.protectRoute, userController.betaresponse);
+
+router.route("/checkusername").get(userController.checkUsername);
 
 export default router;

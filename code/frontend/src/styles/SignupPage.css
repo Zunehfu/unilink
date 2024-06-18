@@ -1,0 +1,72 @@
+.signup-image-container > div {
+    position: absolute;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    border: solid 1px red;
+}
+
+.signup-image-container > div > img {
+    width: 30vw;
+    height: 150px;
+    object-fit: cover;
+}
+
+.image-lineup-item-1 {
+    bottom: -150px;
+    animation: mymove 3s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.image-lineup-item-2 {
+    bottom: 0;
+    animation: mymove 3s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.image-lineup-item-3 {
+    bottom: 0;
+    animation: mymove 3s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.image-lineup-item-4 {
+    bottom: 0;
+    animation: mymove 3s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+@keyframes mymove {
+    to {
+        transform: translateY(-100vh);
+    }
+}
+
+.change-gradient {
+    background: linear-gradient(
+        to right,
+        #ff7e5f,
+        #feb47b
+    ); /* Initial gradient */
+    animation: changeGradient 10s infinite; /* Animation name, duration, and repetition */
+}
+
+@keyframes changeGradient {
+    0% {
+        background: linear-gradient(
+            to right,
+            #ff7e5f,
+            #feb47b
+        ); /* Start gradient */
+    }
+    50% {
+        background: linear-gradient(
+            to right,
+            #6a11cb,
+            #2575fc
+        ); /* Middle gradient */
+    }
+    100% {
+        background: linear-gradient(
+            to right,
+            #ff7e5f,
+            #feb47b
+        ); /* End gradient, back to start */
+    }
+}

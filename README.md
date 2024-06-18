@@ -9,6 +9,7 @@ A social networking platform for university students
 3. Run the cmd `npm i`.
 4. Open terminal/cmd inside _frontend_ dir
 5. Run the cmd `npm i`.
+6. Add a `config.env` file including all the environmental vars in _backend_ dir.
 
 ## Starting the app
 

@@ -8,5 +8,5 @@ const httpServer = createServer(expressApp);
 initializeSocket(httpServer);
 
 httpServer.listen(port, () => {
-    console.log(`Server is running on port ${port}!`);
+    console.log(`Backend is running on port ${port}!`);
 });

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 15, 2024 at 11:20 AM
+-- Generation Time: Jun 18, 2024 at 02:41 PM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -130,16 +130,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` timestamp NOT NULL,
   `name` varchar(128) DEFAULT NULL,
   `last_online` timestamp NOT NULL,
-  `age` tinyint UNSIGNED DEFAULT NULL,
-  `university` varchar(64) NOT NULL,
-  `major` varchar(64) DEFAULT NULL,
+  `university` tinyint UNSIGNED NOT NULL,
+  `major` tinyint UNSIGNED DEFAULT NULL,
   `batch` smallint UNSIGNED DEFAULT NULL,
-  `relationship_status` varchar(32) DEFAULT NULL,
-  `gender` varchar(16) DEFAULT NULL,
+  `relationship_status` tinyint UNSIGNED DEFAULT NULL,
+  `gender` tinyint UNSIGNED DEFAULT NULL,
   `contact` varchar(32) DEFAULT NULL,
   `personal_email` varchar(64) DEFAULT NULL,
   `website` varchar(64) DEFAULT NULL,
-  `interested_in` varchar(16) DEFAULT NULL,
+  `interested_in` tinyint UNSIGNED DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`),

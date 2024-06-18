@@ -25,4 +25,4 @@ const pool = mysql
     })
     .promise();
 
-export default pool;
+export { pool };

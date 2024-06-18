@@ -1,4 +1,3 @@
-import React from "react";
 import EditorReadOnly from "./editor/EditorReadOnly";
 
 export default function PostContent({ content }) {
